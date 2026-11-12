@@ -1,98 +1,55 @@
-# 🔥 Ember Spin
+<div align="center">
+  <h1>🔥 Ember Spin</h1>
+  <p><strong>Uma experiência de sorte, estratégia e desafios com a força da Fênix.</strong></p>
+  <p>
+    <a href="https://rokhendev.github.io/EmberSpin/">🎮 JOGAR AGORA</a>
+  </p>
+</div>
 
-**Ember Spin** é um jogo de navegador inspirado em máquinas de caça-níqueis, com ambientação de fantasia, uma Fênix provocadora e visual que mistura elementos retrô e modernos.
+---
 
-O jogo é gratuito e utiliza exclusivamente **créditos virtuais fictícios**. Não há pagamentos, prêmios em dinheiro ou transações reais. Ember Spin não é uma plataforma de apostas e não deve ser utilizado como treinamento para apostas.
+## Sobre o jogo
 
-## ✨ Funcionalidades
+Ember Spin é um jogo gratuito para navegador inspirado nas máquinas de caça-níqueis, com uma temática de fogo e fantasia protagonizada por uma Fênix. Combine símbolos, enfrente eventos especiais, aprimore suas habilidades e avance por quatro níveis de dificuldade.
 
-- **Quatro níveis de desafio:** Nível 1, Nível 2, Nível 3 e Nível Fênix, cada um com saldo inicial, meta e tabela de pagamentos próprios.
-- **Rolos e símbolos:** Trevo, Morango, Diamante, Fênix e símbolo vazio.
-- **Eventos aleatórios:** desafios de perguntas, evento de fogo, escolha de cartas, giros automáticos da Fênix e apostas forçadas fictícias.
-- **Loja de melhorias:** compre aprimoramentos para os multiplicadores dos símbolos e para o limite de aposta.
-- **Progresso:** alcance as metas para concluir níveis e desbloquear os próximos.
-- **Salvamento por código:** gere um código de resgate de oito caracteres e use-o para carregar o progresso posteriormente no mesmo navegador.
-- **Personalização:** controle a música e o volume e alterne o visual Pixel 8-bit.
-- **Interface adaptável:** experiência ajustada para computadores e dispositivos móveis, com suporte a tela cheia.
+**Não é necessário baixar ou instalar o jogo.** Basta acessar [rokhendev.github.io/EmberSpin](https://rokhendev.github.io/EmberSpin/) e começar a jogar.
 
-## 🚀 Como executar
+## Recursos
 
-O Ember Spin não precisa de instalação de dependências, compilação ou servidor de backend. É feito com HTML, CSS e JavaScript e pode ser executado em um navegador moderno.
+- Quatro níveis de dificuldade com metas e desafios próprios.
+- Giros com símbolos, combinações e multiplicadores.
+- Eventos especiais da Fênix e desafios interativos.
+- Loja com melhorias para a progressão da partida.
+- Histórico de resultados e sistema de pontuação.
+- Salvamento e recuperação de progresso por código.
+- Interface adaptada para computadores e dispositivos móveis.
+- Estilo visual moderno e opção em pixel art.
 
-### 1. Organize os arquivos
+## Como jogar
 
-Deixe os arquivos do projeto na mesma pasta:
+1. Acesse **[Ember Spin](https://rokhendev.github.io/EmberSpin/)**.
+2. Entre no jogo e escolha um nível disponível.
+3. Consulte as instruções e ajuste o valor da aposta virtual.
+4. Gire os rolos, acompanhe os resultados e participe dos eventos.
+5. Alcance a meta do nível para progredir.
 
-```text
-Ember-Spin/
-├── index.html
-├── ember-patch.js
-├── rokhendev-logo.png
-├── README.md
-└── LICENSE
-```
-
-> **Importante:** o `index.html` incluído neste projeto carrega o `ember-patch.js`. Esse complemento utiliza a imagem `rokhendev-logo.png`; mantenha os três arquivos na mesma pasta e use exatamente esse nome para a imagem.
-
-### 2. Inicie um servidor local
-
-Na pasta do projeto, execute:
-
-```bash
-python -m http.server 8000
-```
-
-Depois, abra no navegador:
-
-```text
-http://localhost:8000
-```
-
-Também é possível abrir a pasta no Visual Studio Code e iniciar o projeto com a extensão **Live Server**.
-
-## 💾 Sobre os dados salvos
-
-O progresso é armazenado no `localStorage` do navegador. O código de resgate não é uma conta online nem salva os dados em um servidor: ele permite recuperar os dados armazenados no mesmo navegador e na mesma origem do site.
-
-Por isso, limpar os dados do site ou utilizar outro navegador/dispositivo pode impedir a recuperação do progresso. Guarde o código e evite apagar os dados locais do navegador enquanto quiser manter os saves.
-
-## 🌐 Tecnologias
+## Tecnologias
 
 - HTML5
 - CSS3
-- JavaScript (Vanilla JS)
-- Web Audio API para áudio gerado no navegador
-- `localStorage` para armazenamento local do progresso
-- Google Fonts para as famílias tipográficas utilizadas na interface
+- JavaScript
 
-Não há framework JavaScript ou processo de build obrigatório. As fontes do Google Fonts são carregadas pela internet; sem conexão, o navegador utilizará fontes alternativas disponíveis no sistema.
+## Aviso importante
 
-## 📁 Arquivos do projeto
+Ember Spin é um jogo de entretenimento **gratuito**, que utiliza exclusivamente créditos virtuais. Não há depósitos, saques ou transações com dinheiro real. O jogo não é uma casa de apostas e não deve ser utilizado como treinamento para apostas ou jogos de azar.
 
-| Arquivo | Descrição |
-| --- | --- |
-| `index.html` | Estrutura, estilos e lógica principal do jogo. |
-| `ember-patch.js` | Complemento visual e ajustes de interface, responsividade e integração da marca RokhenDEV. |
-| `rokhendev-logo.png` | Logotipo utilizado pelo complemento visual. |
-| `README.md` | Documentação do projeto. |
-| `LICENSE` | Termos da licença MIT. |
+## Desenvolvedor
 
-## ⚠️ Aviso
+Desenvolvido por **RokhenDEV**.
 
-Ember Spin é uma experiência recreativa com dinheiro fictício. Os valores exibidos no jogo são apenas parte da mecânica e não podem ser comprados, vendidos, sacados ou convertidos em dinheiro real. O jogo não oferece serviços de apostas.
-
-O aviso exibido no próprio jogo indica **+12 anos**, considerando elementos de fantasia e sustos leves.
-
-## 👨‍💻 Desenvolvedor e contato
-
-**RokhenDEV**
-
-- GitHub: [github.com/RokhenDEV](https://github.com/RokhenDEV)
+- GitHub: [@RokhenDEV](https://github.com/RokhenDEV)
 - E-mail: [rokhendev@gmail.com](mailto:rokhendev@gmail.com)
-- Portfólio: [rokhendev.github.io/portfolio-rokhen](https://rokhendev.github.io/portfolio-rokhen/)
 
-O código original também mantém o crédito exibido na tela interna do jogo: **João Samuel (UFVJM)**.
+## Licença
 
-## 📄 Licença
-
-Este projeto é distribuído sob a licença **MIT**. Consulte o arquivo [`LICENSE`](LICENSE) para ver os termos completos.
+Este projeto é distribuído sob a licença [MIT](LICENSE). Consulte o arquivo `LICENSE` para ver os termos de uso, cópia, modificação e distribuição.
