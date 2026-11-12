@@ -1,0 +1,2271 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ember Spin</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐦‍🔥</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Space+Mono:wght@400;700&family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+    <style>
+        /* ===== RESET E BASE ===== */
+        :root{
+            --bg:#050002; --bg2:#0c0308; --panel:#150810; --panel2:#1d0b14; --line:#3a1420;
+            --flame1:#ff2e2e; --flame2:#ff8a3d; --gold:#ffd23f; --diamond:#7dd3fc; --clover:#4ade80; --straw:#fb7185;
+            --blood:#6e0000; --text:#f2e6d3; --dim:#9c8266;
+            --font-display:'Cinzel', serif; --font-body:'Space Mono', monospace;
+        }
+        *{box-sizing:border-box; margin:0; padding:0;}
+        html,body{height:100%; width:100%; overflow:hidden;}
+        body{
+            min-height:100%;
+            background:radial-gradient(circle at 20% 0%, rgba(255,46,46,0.09), transparent 45%),
+            radial-gradient(circle at 85% 100%, rgba(255,138,61,0.06), transparent 45%), var(--bg);
+            color:var(--text); font-family:var(--font-body);
+            display:flex; justify-content:center; align-items:center;
+        }
+        .hidden{display:none !important;}
+        .app{
+            position:relative; isolation:isolate;
+            background:linear-gradient(180deg, var(--panel), var(--panel2));
+            border:1px solid var(--line);
+            box-shadow:0 0 0 1px rgba(255,46,46,0.05), 0 30px 70px -25px rgba(0,0,0,0.85), 0 0 60px -18px rgba(255,46,46,0.15);
+            overflow:hidden;
+            animation:dread-pulse 4s ease-in-out infinite;
+            width:100vw; height:100vh; max-width:none; max-height:none;
+            display:flex; flex-direction:column;
+            border-radius:0;
+        }
+        @keyframes dread-pulse{
+            0%,100%{box-shadow:0 0 0 1px rgba(255,46,46,0.05), 0 30px 70px -25px rgba(0,0,0,0.85), 0 0 60px -18px rgba(255,46,46,0.15);}
+            50%{box-shadow:0 0 0 1px rgba(255,46,46,0.12), 0 30px 70px -25px rgba(0,0,0,0.85), 0 0 80px -14px rgba(255,46,46,0.3);}
+        }
+        .app::after{content:""; position:absolute; inset:0; pointer-events:none; z-index:3;
+            background:radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.6) 100%);}
+        .app.shake{animation:shake 0.5s;}
+        @keyframes shake{10%,90%{transform:translateX(-1px);} 20%,80%{transform:translateX(2px);}
+            30%,50%,70%{transform:translateX(-5px);} 40%,60%{transform:translateX(5px);}}
+        .flash{position:absolute; inset:0; pointer-events:none; z-index:50;
+            background:radial-gradient(circle, rgba(255,210,63,0.55), rgba(255,46,46,0.15) 55%, transparent 75%);
+            animation:flash-fade 0.7s ease-out forwards;}
+        @keyframes flash-fade{0%{opacity:1;} 100%{opacity:0;}}
+        .app.pixel-on{
+            --font-display:'Press Start 2P', monospace; --font-body:'VT323', monospace;
+            --gold:#f8d800; --flame1:#ff004d; --flame2:#ff7b00; --clover:#00e436; --diamond:#29adff; --straw:#ff77a8;
+            --panel:#0c0410; --panel2:#150818; --line:#000000; --text:#fff1e8; --dim:#8595a8;
+            image-rendering:pixelated;
+        }
+        .app.pixel-on, .app.pixel-on *{ border-radius:0 !important; }
+        .app.pixel-on::before{
+            content:""; position:absolute; inset:0; pointer-events:none; z-index:6; mix-blend-mode:multiply;
+            background:repeating-linear-gradient(0deg, rgba(0,0,0,0.2) 0px, rgba(0,0,0,0.2) 1px, transparent 1px, transparent 3px);
+        }
+        .app.pixel-on .primary-btn, .app.pixel-on .spin-btn, .app.pixel-on .play-btn, .app.pixel-on .icon-btn,
+        .app.pixel-on .step-btn, .app.pixel-on .quick-btn, .app.pixel-on .buy-btn, .app.pixel-on .close-btn,
+        .app.pixel-on .menu-panel .primary-btn, .app.pixel-on .challenge-btn, .app.pixel-on .fire-btn,
+        .app.pixel-on .shop-continue{
+            border:2px solid #000 !important;
+            box-shadow:inset -2px -2px 0 rgba(0,0,0,0.45), inset 2px 2px 0 rgba(255,255,255,0.25) !important;
+        }
+        .app.pixel-on .diff-card, .app.pixel-on .balance-panel, .app.pixel-on .bet-panel, .app.pixel-on .reel,
+        .app.pixel-on .upg-card, .app.pixel-on .shop-panel, .app.pixel-on .badge, .app.pixel-on .end-card,
+        .app.pixel-on .menu-panel, .app.pixel-on .challenge-panel, .app.pixel-on .warning-panel, .app.pixel-on .fire-panel,
+        .app.pixel-on .card-panel{
+            border:2px solid #000 !important; box-shadow:3px 3px 0 #000 !important;
+        }
+        .app.pixel-on .reel.spinning .sym{ animation:reel-blur 0.12s steps(3) infinite !important; }
+        .app.pixel-on .flicker-text{ animation:flicker 3.4s steps(2) infinite !important; }
+        .app.pixel-on .scare-active .scare-icon{ animation:glitch-jitter 1.1s steps(8) 1 !important; }
+        .screen{
+            flex:1; padding:20px 24px; position:relative; z-index:4;
+            display:flex; flex-direction:column; overflow-y:auto;
+        }
+        .screen.hidden{display:none;}
+        @media (max-height:700px){ .screen{ padding:12px 16px; } }
+
+        /* ===== MODO INVERTIDO ===== */
+        .app.inverted-mode {
+            filter: invert(1) hue-rotate(180deg);
+            transition: filter 0.3s ease;
+        }
+        .app.inverted-mode .app::after { display: none; }
+        .inverted-badge {
+            background: #ff00ff;
+            color: #00ffff;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-family: var(--font-display);
+            font-size: 11px;
+            letter-spacing: 1px;
+            border: 2px solid #00ffff;
+            animation: blink-invert 0.8s infinite alternate;
+        }
+        @keyframes blink-invert {
+            0% { opacity: 0.6; transform: scale(0.95); }
+            100% { opacity: 1; transform: scale(1.05); }
+        }
+
+        /* ===== HISTÓRICO ===== */
+        .history-panel {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 8px;
+            flex-shrink: 0;
+        }
+        .history-dot {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #2a1a1a;
+            border: 2px solid #3a2a2a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: background 0.3s, border-color 0.3s;
+        }
+        .history-dot.win { background: var(--clover); border-color: var(--clover); }
+        .history-dot.lose { background: var(--flame1); border-color: var(--flame1); }
+
+        /* ===== AVISO INICIAL ===== */
+        .warning-wrap{
+            text-align:center; padding:20px 0; flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center;
+        }
+        .warning-title{
+            font-family:var(--font-display); font-size:32px; color:var(--flame1);
+            text-shadow:0 0 30px rgba(255,46,46,0.7);
+            margin-bottom:10px;
+            animation:pulse-warning 1.5s ease-in-out infinite;
+        }
+        @keyframes pulse-warning{
+            0%,100%{transform:scale(1); text-shadow:0 0 30px rgba(255,46,46,0.7);}
+            50%{transform:scale(1.05); text-shadow:0 0 60px rgba(255,46,46,1);}
+        }
+        .warning-text{
+            font-size:12px; color:var(--text); max-width:400px; margin:0 auto 16px; line-height:1.5;
+        }
+        .warning-extra {
+            font-size:11px; color:var(--gold); max-width:400px; margin:0 auto 16px;
+            border-top:1px solid var(--line); padding-top:10px;
+            font-style:italic;
+        }
+        .warning-loading{
+            display:flex; align-items:center; justify-content:center; gap:14px; margin-top:10px;
+        }
+        .warning-loading .phoenix-load{
+            font-size:36px; animation:float-glow 1.8s ease-in-out infinite;
+        }
+        .warning-loading .load-text{
+            font-family:var(--font-body); font-size:14px; color:var(--gold);
+            letter-spacing:2px;
+        }
+        .warning-progress{
+            width:200px; height:4px; background:var(--line); border-radius:4px; margin-top:10px; overflow:hidden;
+        }
+        .warning-progress-bar{
+            height:100%; width:0%; background:linear-gradient(90deg, var(--flame1), var(--gold));
+            transition:width 0.5s ease;
+        }
+        .warning-timer{
+            font-size:14px; color:var(--dim); margin-top:8px;
+        }
+        .warning-info{
+            font-size:10px; color:var(--dim); max-width:400px; margin:4px auto 0; line-height:1.4;
+            border-top:1px solid var(--line); padding-top:8px;
+        }
+
+        /* ===== MENU, BOOT, ETC ===== */
+        .menu-wrap{text-align:center; padding:20px 0; flex:1; display:flex; flex-direction:column; justify-content:center;}
+        .boot-lines{min-height:80px; display:flex; flex-direction:column; justify-content:center; padding:0 14px;}
+        .boot-line{font-family:var(--font-body); color:var(--clover); font-size:13px; text-align:left; margin:2px auto; max-width:280px;
+            opacity:0; animation:boot-fade 0.3s ease forwards; text-shadow:0 0 6px rgba(0,228,54,0.5);}
+        @keyframes boot-fade{ to{opacity:1;} }
+        .opening-icon{font-size:48px; margin-bottom:10px; filter:drop-shadow(0 0 20px rgba(255,46,46,0.55));}
+        .opening-icon.small{font-size:32px;}
+        .opening-title{font-family:var(--font-display); font-size:20px; letter-spacing:2px; color:var(--flame1);
+            text-shadow:0 0 16px rgba(255,46,46,0.6); margin-bottom:4px;}
+        .opening-sub{font-size:10px; color:var(--dim); margin-bottom:16px; font-style:italic;}
+        .menu-wrap h2{font-family:var(--font-display); font-size:16px; color:var(--gold); margin-bottom:12px;}
+        .menu-buttons{display:flex; flex-direction:column; gap:8px; max-width:200px; margin:0 auto;}
+        .primary-btn{padding:10px 16px; border:none; cursor:pointer; margin:2px 0;
+            font-family:var(--font-display); font-weight:700; font-size:11px; letter-spacing:1px; border-radius:9px;
+            background:linear-gradient(90deg, var(--flame2), var(--gold)); color:#1a0e02;
+            display:inline-block; width:auto; min-width:120px;}
+        .primary-btn.ghost{background:none; border:1px solid var(--flame2); color:var(--flame2);}
+        .primary-btn.wide{width:100%;}
+        .credits-text{font-size:11px; color:var(--dim); margin:10px 0 16px; line-height:1.6;}
+        .tutorial-wrap{padding:20px 10px; text-align:center; flex:1; display:flex; flex-direction:column; justify-content:center;}
+        .tutorial-skip{display:block; margin:0 auto 10px; font-size:10px; color:var(--dim); background:none; border:none; text-decoration:underline; cursor:pointer;}
+        .tutorial-badge{font-size:10px; color:var(--dim); letter-spacing:2px; margin-bottom:6px;}
+        .tutorial-wrap h2{font-family:var(--font-display); font-size:14px; color:var(--gold); margin-bottom:10px;}
+        .tutorial-wrap p{font-size:11px; color:var(--text); line-height:1.5; text-align:left; max-width:300px; margin:0 auto 16px; min-height:60px;}
+        .tutorial-nav{display:flex; justify-content:center; gap:10px; max-width:260px; margin:0 auto; flex-wrap:wrap;}
+        #screen-fenix-intro .fenix-big{
+            font-size:72px; animation:float-glow 1.5s ease-in-out infinite;
+            margin-bottom:10px;
+        }
+        #screen-fenix-intro .fenix-phrase{
+            font-family:var(--font-display); color:var(--flame1); font-size:20px;
+            margin:8px 0; text-shadow:0 0 20px rgba(255,46,46,0.6);
+        }
+        #screen-fenix-intro .fenix-countdown{
+            font-family:var(--font-display); font-size:48px; color:var(--gold);
+            margin:10px 0; text-shadow:0 0 30px rgba(255,210,63,0.4);
+        }
+        .intro{text-align:center; margin-bottom:12px;}
+        .intro h2{font-family:var(--font-display); font-size:15px; color:var(--gold); margin-bottom:2px;}
+        .intro p{font-size:10px; color:var(--dim); line-height:1.4;}
+        .diff-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; flex:1; align-content:start;}
+        @media (max-width:480px){ .diff-grid{grid-template-columns:1fr; } }
+        .diff-card{position:relative; border:1px solid var(--line); border-radius:10px; padding:10px;
+            background:rgba(255,255,255,0.02); cursor:pointer; transition:transform 0.15s, border-color 0.15s;
+            display:flex; flex-direction:column; gap:4px;}
+        .diff-card:hover{transform:translateY(-2px); border-color:var(--flame2);}
+        .diff-card.locked{cursor:not-allowed; opacity:0.55;}
+        .diff-card.locked:hover{transform:none; border-color:var(--line);}
+        .diff-card.nivel1{border-top:3px solid var(--clover);}
+        .diff-card.nivel2{border-top:3px solid var(--diamond);}
+        .diff-card.nivel3{border-top:3px solid var(--flame2);}
+        .diff-card.nivelfenix{border-top:3px solid var(--flame1);}
+        .diff-card h3{font-family:var(--font-display); font-size:13px;}
+        .diff-desc{font-size:9px; color:var(--dim); line-height:1.3; min-height:20px;}
+        .diff-start{font-size:10px;}
+        .diff-rules{list-style:none; font-size:8.5px; color:var(--dim); display:flex; flex-direction:column; gap:1px;}
+        .diff-rules li::before{content:"– ";}
+        .card-pay{display:flex; flex-direction:column; gap:2px; padding:4px 0; border-top:1px dashed var(--line); border-bottom:1px dashed var(--line);}
+        .lock-badge{position:absolute; top:6px; right:6px; font-size:14px;}
+        .play-btn{margin-top:auto; padding:6px; border:none; border-radius:6px; cursor:pointer;
+            font-family:var(--font-display); font-weight:700; font-size:10px; letter-spacing:0.5px;
+            background:linear-gradient(90deg, var(--flame2), var(--gold)); color:#1a0e02;
+            width:auto; min-width:80px;}
+        .diff-card.locked .play-btn{background:var(--line); color:var(--dim); cursor:not-allowed;}
+        .pay-row{display:flex; align-items:center; gap:4px; font-size:9px;}
+        .pay-emoji{width:14px;}
+        .pay-label{flex:1; color:var(--dim);}
+        .pay-chance{color:var(--dim); width:30px; text-align:right;}
+        .pay-mult{width:28px; text-align:right; color:var(--gold); font-weight:700;}
+
+        /* ===== GAME TOP ===== */
+        .game-top{
+            display:flex; align-items:center; gap:6px; margin-bottom:6px; flex-wrap:wrap;
+            flex-shrink:0;
+        }
+        .badge{
+            font-family:var(--font-display); font-size:10px; padding:3px 8px; border-radius:20px; border:1px solid var(--line); letter-spacing:0.5px;
+        }
+        .badge.nivel1{color:var(--clover); border-color:var(--clover);}
+        .badge.nivel2{color:var(--diamond); border-color:var(--diamond);}
+        .badge.nivel3{color:var(--flame2); border-color:var(--flame2);}
+        .badge.nivelfenix{color:var(--flame1); border-color:var(--flame1);}
+        .upg-chips{display:flex; gap:4px; font-size:10px; color:var(--dim);}
+        .chip-u{background:rgba(255,255,255,0.04); border:1px solid var(--line); border-radius:4px; padding:1px 4px;}
+        .icon-btn{
+            background:none; border:1px solid var(--line); color:var(--dim);
+            font-family:var(--font-body); font-size:10px; padding:4px 6px; border-radius:6px; cursor:pointer;
+        }
+        .icon-btn:hover{border-color:var(--gold); color:var(--gold);}
+        .icon-btn:disabled{opacity:0.4; cursor:not-allowed;}
+        #gameMenuBtn { margin-left: auto; }
+
+        /* ===== BALANCE ===== */
+        .balance-panel{
+            text-align:center; padding:8px 10px; border:1px solid var(--line); border-radius:8px;
+            background:rgba(0,0,0,0.25); margin-bottom:6px; position:relative; flex-shrink:0;
+        }
+        .balance-label{font-size:8px; letter-spacing:2px; color:var(--dim);}
+        .balance-value{font-family:var(--font-display); font-weight:900; font-size:26px; color:var(--gold);
+            text-shadow:0 0 14px rgba(255,210,63,0.35);}
+        .floaters{position:absolute; left:0; right:0; top:2px; pointer-events:none;}
+        .floater{position:absolute; left:50%; transform:translateX(-50%); font-family:var(--font-display); font-weight:700; font-size:13px;
+            animation:rise-fade 1.6s ease-out forwards;}
+        .floater.pos{color:var(--gold);} .floater.neg{color:var(--flame1);}
+        @keyframes rise-fade{0%{opacity:0; transform:translate(-50%,0) scale(0.85);} 15%{opacity:1;} 100%{opacity:0; transform:translate(-50%,-40px) scale(1.05);}}
+
+        /* ===== REELS ===== */
+        .reels-row{
+            display:flex; justify-content:center; align-items:center; gap:14px;
+            padding:10px 0 10px; position:relative; border-radius:12px;
+            flex:1 1 auto; min-height:120px;
+            background:radial-gradient(ellipse at center, rgba(255,46,46,0.05) 0%, transparent 70%);
+            overflow:hidden;
+        }
+        .reels-row.win-glow{animation:glow-pulse 0.7s ease-out;}
+        .reels-row.jackpot-glow{animation:glow-pulse-big 1.2s ease-out;}
+        @keyframes glow-pulse{0%{box-shadow:0 0 0 rgba(255,210,63,0);} 40%{box-shadow:0 0 40px rgba(255,210,63,0.5);} 100%{box-shadow:0 0 0 rgba(255,210,63,0);}}
+        @keyframes glow-pulse-big{0%{box-shadow:0 0 0 rgba(255,46,46,0);} 35%{box-shadow:0 0 60px rgba(255,46,46,0.8);} 100%{box-shadow:0 0 0 rgba(255,46,46,0);}}
+        .reel{
+            width:90px; height:110px; background:#0a0503; border:2px solid var(--line); border-radius:10px;
+            display:flex; align-items:center; justify-content:center; font-size:48px;
+            position:relative; overflow:hidden;
+            box-shadow:0 0 20px rgba(255,46,46,0.15), inset 0 0 30px rgba(0,0,0,0.6);
+            transition:transform 0.2s;
+            z-index:2;
+        }
+        .reel .sym{display:inline-block; line-height:1;}
+        .reel.spinning .sym{animation:reel-blur 0.09s linear infinite;}
+        @keyframes reel-blur{0%{transform:translateY(-10px); opacity:0.5;} 50%{transform:translateY(10px); opacity:1;} 100%{transform:translateY(-10px); opacity:0.5;}}
+        .reel.landed{animation:land-pulse 0.4s ease-out;}
+        @keyframes land-pulse{0%{transform:scale(1.2);} 100%{transform:scale(1);}}
+
+        /* ===== RESULT / BET ===== */
+        .result-msg{
+            text-align:center; font-size:12px; color:var(--dim); min-height:18px; margin-bottom:6px; letter-spacing:0.3px;
+            flex-shrink:0;
+        }
+        .result-msg.win{color:var(--gold);} .result-msg.lose{color:var(--flame1);}
+        .result-msg.jackpot{color:var(--flame2); font-weight:700;}
+        .bet-panel{
+            border:1px solid var(--line); border-radius:10px; padding:8px 12px; background:rgba(0,0,0,0.2);
+            flex-shrink:0;
+            display:flex; flex-direction:column; align-items:center;
+        }
+        .bet-row{
+            display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:4px;
+            width:100%;
+        }
+        .step-btn{
+            width:28px; height:28px; border-radius:6px; border:1px solid var(--line); background:#0a0503;
+            color:var(--text); font-size:14px; cursor:pointer;
+        }
+        .step-btn:disabled{opacity:0.35; cursor:not-allowed;}
+        .bet-value{
+            font-family:var(--font-display); font-size:15px; min-width:80px; text-align:center;
+        }
+        .quick-row{
+            display:flex; gap:6px; justify-content:center; margin-bottom:6px;
+            width:100%;
+        }
+        .quick-btn{
+            padding:3px 8px; border-radius:4px; border:1px solid var(--line); background:none;
+            color:var(--dim); font-family:var(--font-body); font-size:10px; cursor:pointer;
+        }
+        .quick-btn:hover{border-color:var(--gold); color:var(--gold);}
+        .quick-btn:disabled{opacity:0.35; cursor:not-allowed;}
+        .spin-area {
+            display:flex; gap:8px; align-items:center; justify-content:center; width:100%;
+            margin-top:4px;
+        }
+        .spin-btn{
+            padding:8px 12px; border:none; border-radius:8px; cursor:pointer;
+            font-family:var(--font-display); font-weight:900; font-size:13px; letter-spacing:1px;
+            background:linear-gradient(90deg, var(--flame1), var(--flame2), var(--gold)); color:#1a0602;
+            flex:1; max-width:300px;
+        }
+        .spin-btn:disabled{opacity:0.4; cursor:not-allowed;}
+        .paytable{margin-top:8px; font-size:10px; flex-shrink:0;}
+        .paytable summary{cursor:pointer; color:var(--dim); letter-spacing:0.5px;}
+        .paytable summary:hover{color:var(--gold);}
+        #paytableBody{display:flex; flex-direction:column; gap:3px; margin-top:6px;}
+        .footnote{text-align:center; font-size:8px; color:var(--dim); margin-top:6px; opacity:0.6; flex-shrink:0;}
+
+        /* ===== OVERLAYS ===== */
+        .overlay{position:absolute; inset:0; background:rgba(4,2,1,0.86); backdrop-filter:blur(2px); display:flex; align-items:flex-end; z-index:40;}
+        .overlay .shop-panel, .overlay .menu-panel{
+            width:100%; background:linear-gradient(180deg, var(--panel), var(--panel2)); border-top:1px solid var(--line);
+            border-radius:16px 16px 0 0; padding:14px 16px 18px; max-height:70%; overflow-y:auto;
+        }
+        .shop-head, .menu-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;}
+        .shop-head h2, .menu-head h2{font-family:var(--font-display); font-size:14px; color:var(--gold);}
+        .close-btn{background:none; border:none; color:var(--dim); font-size:16px; cursor:pointer;}
+        .menu-options{display:flex; flex-direction:column; gap:8px; margin-top:6px;}
+        .menu-options .primary-btn{ margin:0; }
+        .shop-continue{
+            margin-top:12px; width:100%; padding:10px; border:none; border-radius:8px; cursor:pointer;
+            font-family:var(--font-display); font-weight:700; font-size:12px; letter-spacing:1px;
+            background:linear-gradient(90deg, var(--flame2), var(--gold)); color:#1a0e02;
+        }
+        .shop-continue:hover{ opacity:0.9; transform:scale(1.02); }
+        .save-load-section{ margin-top:14px; border-top:1px solid var(--line); padding-top:12px; }
+        .save-load-section h3{ font-size:12px; color:var(--gold); margin-bottom:6px; }
+        .save-load-section input{ width:100%; padding:8px; background:#0a0503; border:1px solid var(--line); color:var(--text); border-radius:6px; font-family:var(--font-body); font-size:11px; text-align:center; letter-spacing:2px; }
+        .save-load-section .load-row{ display:flex; gap:8px; margin-top:6px; }
+        .save-load-section .load-row .primary-btn{ flex:1; margin:0; }
+        #loadSaveMsg{ font-size:10px; color:var(--dim); margin-top:4px; min-height:16px; }
+        .upgrade-list{display:flex; flex-direction:column; gap:8px;}
+        .upg-card{display:flex; align-items:center; gap:10px; border:1px solid var(--line); border-radius:8px; padding:8px 10px;}
+        .upg-icon{font-size:20px;}
+        .upg-info{flex:1;}
+        .upg-name{font-size:11px; font-weight:700;}
+        .upg-level{color:var(--gold); font-size:9px; margin-left:4px;}
+        .upg-desc{font-size:8.5px; color:var(--dim); margin-top:1px;}
+        .buy-btn{border:none; border-radius:6px; padding:6px 8px; cursor:pointer; text-align:center;
+            background:linear-gradient(90deg, var(--flame2), var(--gold)); color:#1a0e02; font-family:var(--font-body); font-size:9px; font-weight:700;}
+        .buy-btn span{display:block; font-size:10px; margin-top:1px;}
+        .buy-btn:disabled{background:var(--line); color:var(--dim); cursor:not-allowed;}
+
+        /* ===== CHALLENGE ===== */
+        #challengeOverlay {
+            position:absolute; inset:0; z-index:100; background:rgba(0,0,0,0.92);
+            display:flex; flex-direction:column; align-items:center; justify-content:center;
+            padding:20px;
+        }
+        .challenge-panel {
+            background:linear-gradient(180deg, var(--panel), var(--panel2));
+            border:2px solid var(--flame1);
+            border-radius:20px;
+            padding:24px 20px;
+            max-width:420px;
+            width:100%;
+            text-align:center;
+            box-shadow:0 0 50px rgba(255,46,46,0.4);
+            position:relative;
+        }
+        .challenge-phoenix-icon { font-size:56px; filter:drop-shadow(0 0 20px rgba(255,46,46,0.6)); }
+        .challenge-phoenix-speech {
+            font-family:var(--font-display);
+            color:var(--flame1);
+            font-size:18px;
+            margin:4px 0 10px;
+            text-shadow:0 0 20px rgba(255,46,46,0.4);
+            background:rgba(0,0,0,0.3);
+            padding:6px 14px;
+            border-radius:12px;
+            border-left:4px solid var(--flame1);
+            display:inline-block;
+        }
+        .challenge-title { font-family:var(--font-display); font-size:16px; color:var(--gold); margin-bottom:2px; }
+        .challenge-text { font-size:14px; color:var(--text); margin:6px 0; min-height:28px; }
+        .challenge-timer {
+            font-family:var(--font-display);
+            font-size:36px;
+            color:var(--gold);
+            margin:4px 0;
+            text-shadow:0 0 30px rgba(255,210,63,0.5);
+        }
+        .challenge-options {
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:8px;
+            margin:10px 0;
+        }
+        .challenge-options button {
+            padding:10px 4px;
+            border:2px solid var(--line);
+            border-radius:10px;
+            background:rgba(0,0,0,0.4);
+            color:var(--text);
+            font-family:var(--font-body);
+            font-size:13px;
+            cursor:pointer;
+            transition:0.2s;
+        }
+        .challenge-options button:hover:not(:disabled) {
+            border-color:var(--gold);
+            background:rgba(255,210,63,0.1);
+        }
+        .challenge-options button:disabled { opacity:0.4; cursor:not-allowed; }
+        .challenge-options button.correct { border-color:var(--clover); background:rgba(74,222,128,0.2); }
+        .challenge-options button.wrong { border-color:var(--flame1); background:rgba(255,46,46,0.2); }
+        #challengeResult { margin-top:8px; font-size:13px; min-height:20px; }
+
+        /* ===== CARD CHOICE ===== */
+        #cardChoiceOverlay{
+            position:absolute; inset:0; z-index:160; background:rgba(0,0,0,0.88);
+            display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px;
+        }
+        .card-panel{
+            background:linear-gradient(180deg, var(--panel), var(--panel2));
+            border:2px solid var(--gold); border-radius:20px; padding:24px 20px;
+            max-width:420px; width:100%; text-align:center; box-shadow:0 0 50px rgba(255,210,63,0.2);
+        }
+        .card-panel h2{ font-family:var(--font-display); color:var(--gold); font-size:18px; margin-bottom:4px; }
+        .card-panel .card-sub{ font-size:12px; color:var(--dim); margin-bottom:16px; }
+        .card-container{ display:flex; gap:14px; justify-content:center; margin:10px 0; flex-wrap:wrap; }
+        .card{
+            width:100px; height:140px; background:radial-gradient(circle at 20% 30%, #2a1a0a, #0a0503);
+            border:3px solid var(--gold); border-radius:12px; display:flex; flex-direction:column;
+            align-items:center; justify-content:center; font-size:48px; cursor:pointer;
+            transition:transform 0.3s, box-shadow 0.3s; box-shadow:0 0 20px rgba(255,210,63,0.1);
+            color:var(--gold); font-family:var(--font-display); user-select:none; position:relative;
+        }
+        .card:hover:not(.revealed){ transform:scale(1.05); box-shadow:0 0 30px rgba(255,210,63,0.3); }
+        .card.revealed{ border-color:var(--flame2); cursor:default; transform:scale(1); box-shadow:0 0 40px rgba(255,138,61,0.3); }
+        .card.revealed .card-icon{ font-size:36px; margin-bottom:4px; }
+        .card.revealed .card-label{ font-size:11px; color:var(--text); max-width:80px; text-align:center; font-family:var(--font-body); }
+        .card .card-back{ font-size:48px; color:var(--gold); }
+        .card .card-front{ display:none; flex-direction:column; align-items:center; }
+        .card.revealed .card-back{ display:none; }
+        .card.revealed .card-front{ display:flex; }
+        .card.revealed.bonus{ border-color:var(--clover); background:radial-gradient(circle at 20% 30%, #0a2a0a, #050a03); }
+        .card.revealed.penalty{ border-color:var(--flame1); background:radial-gradient(circle at 20% 30%, #2a0a0a, #0a0303); }
+        .card.revealed.neutral{ border-color:var(--dim); background:radial-gradient(circle at 20% 30%, #1a1a1a, #0a0a0a); }
+        #cardResult{ margin-top:12px; font-size:14px; color:var(--text); min-height:24px; }
+        @media (max-width:480px){ .card{ width:80px; height:110px; font-size:36px; } .card.revealed .card-icon{ font-size:28px; } .card.revealed .card-label{ font-size:9px; } }
+        @media (max-width:360px){ .card{ width:70px; height:96px; font-size:30px; } }
+
+        /* ===== GAME OVER / VICTORY ===== */
+        .end-card{text-align:center; padding:20px 10px; flex:1; display:flex; flex-direction:column; justify-content:center;}
+        .end-emoji{font-size:40px; margin-bottom:10px;}
+        .end-card h2{font-family:var(--font-display); font-size:18px; margin-bottom:6px; color:var(--flame1);}
+        .end-card p{font-size:11px; color:var(--dim); margin-bottom:6px; line-height:1.4;}
+        .phoenix-big{font-size:56px; margin-bottom:8px; animation:float-glow 2.2s ease-in-out infinite;}
+        @keyframes float-glow{0%,100%{transform:translateY(0); filter:drop-shadow(0 0 16px rgba(255,138,61,0.5));} 50%{transform:translateY(-6px); filter:drop-shadow(0 0 28px rgba(255,210,63,0.8));}}
+        .unlock-msg{color:var(--gold) !important; font-weight:700;}
+        #screen-victory{position:relative; overflow:hidden;}
+        .particle{position:absolute; top:50%; pointer-events:none; animation:particle-rise 2s ease-out forwards;}
+        @keyframes particle-rise{0%{opacity:0; transform:translateY(0) scale(0.6) rotate(0deg);} 12%{opacity:1;} 100%{opacity:0; transform:translateY(-140px) scale(1.1) rotate(30deg);}}
+        .gameover-actions {
+            display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:12px;
+        }
+
+        /* ===== SCARE ===== */
+        #scareOverlay{
+            position:absolute; inset:0; z-index:200; background:#000; display:flex; flex-direction:column;
+            align-items:center; justify-content:center; overflow:hidden;
+        }
+        #scareOverlay.scare-active{animation:strobe 1.3s steps(1) 1;}
+        @keyframes strobe{
+            0%,8%{background:#000;} 12%{background:var(--blood);} 16%{background:#000;}
+            26%{background:#fff;} 30%{background:#000;} 44%{background:var(--blood);}
+            52%{background:#000;} 66%{background:#fff;} 70%{background:#000;} 100%{background:#000;}
+        }
+        .scare-icon{font-size:80px;}
+        .scare-active .scare-icon{animation:glitch-jitter 1.3s linear 1;}
+        @keyframes glitch-jitter{
+            0%{transform:translate(0,0) scale(1);} 10%{transform:translate(-6px,3px) scale(1.05) skewX(4deg);}
+            20%{transform:translate(5px,-4px) scale(0.95) skewX(-3deg);} 30%{transform:translate(-3px,5px) scale(1.1);}
+            40%{transform:translate(6px,-2px) scale(0.9) skewX(5deg);} 50%{transform:translate(-5px,-3px) scale(1.15);}
+            60%{transform:translate(4px,4px) scale(0.92);} 70%{transform:translate(-6px,2px) scale(1.08) skewX(-4deg);}
+            80%{transform:translate(3px,-5px) scale(0.97);} 90%{transform:translate(-2px,3px) scale(1.05);} 100%{transform:translate(0,0) scale(1);}
+        }
+        .scare-text{font-family:var(--font-display); color:var(--flame1); font-size:14px; letter-spacing:2px; margin-top:8px; text-align:center; text-shadow:0 0 10px var(--flame1); padding:0 16px;}
+
+        /* ===== FIRE ===== */
+        #fireOverlay {
+            position:absolute; inset:0; z-index:150;
+            background:radial-gradient(ellipse at center, #8b0000 0%, #2a0000 60%, #000 100%);
+            display:flex; flex-direction:column; align-items:center; justify-content:center;
+            padding:20px; overflow:hidden;
+        }
+        .fire-bg-particles {
+            position:absolute; inset:0;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(255,100,0,0.3) 0%, transparent 50%),
+                radial-gradient(circle at 90% 80%, rgba(255,200,0,0.2) 0%, transparent 50%),
+                radial-gradient(circle at 40% 60%, rgba(255,50,0,0.2) 0%, transparent 40%),
+                radial-gradient(circle at 70% 30%, rgba(255,150,0,0.15) 0%, transparent 40%);
+            animation:fire-bg-anim 2s ease-in-out infinite alternate;
+            pointer-events:none;
+        }
+        @keyframes fire-bg-anim {
+            0% { opacity:0.6; transform:scale(1) rotate(0deg); }
+            100% { opacity:1; transform:scale(1.1) rotate(3deg); }
+        }
+        .fire-emoji-large {
+            position:absolute; font-size:80px; pointer-events:none;
+            animation:float-fire-large 1.8s ease-in-out infinite alternate;
+            opacity:0.5;
+        }
+        .fire-emoji-large:nth-child(1) { top:5%; left:5%; animation-delay:0s; }
+        .fire-emoji-large:nth-child(2) { top:10%; right:10%; animation-delay:0.6s; }
+        .fire-emoji-large:nth-child(3) { bottom:15%; left:15%; animation-delay:1.2s; }
+        .fire-emoji-large:nth-child(4) { bottom:20%; right:20%; animation-delay:0.3s; }
+        .fire-emoji-large:nth-child(5) { top:45%; left:45%; animation-delay:0.9s; font-size:120px; opacity:0.3; }
+        @keyframes float-fire-large {
+            0% { transform:translateY(0) scale(1) rotate(0deg); }
+            100% { transform:translateY(-30px) scale(1.2) rotate(10deg); }
+        }
+        .fire-panel {
+            background:rgba(0,0,0,0.75);
+            border:2px solid var(--flame1);
+            border-radius:16px;
+            padding:20px 24px;
+            max-width:400px;
+            width:100%;
+            text-align:center;
+            z-index:2;
+            position:relative;
+            backdrop-filter:blur(4px);
+            box-shadow:0 0 60px rgba(255,46,46,0.3);
+        }
+        .fire-panel h2 {
+            font-family:var(--font-display);
+            color:var(--flame1);
+            font-size:22px;
+            margin-bottom:6px;
+            text-shadow:0 0 30px rgba(255,46,46,0.6);
+        }
+        .fire-panel .fire-loss { font-size:20px; color:var(--gold); margin:8px 0; }
+        .fire-panel .fire-timer {
+            font-family:var(--font-display);
+            font-size:32px;
+            color:#fff;
+            text-shadow:0 0 20px rgba(255,210,63,0.5);
+            margin:4px 0;
+        }
+        .fire-panel .fire-instruction {
+            font-size:13px;
+            color:var(--dim);
+            margin-top:8px;
+        }
+        .fire-btn {
+            position:absolute;
+            width:65px;
+            height:65px;
+            border-radius:50%;
+            background:radial-gradient(circle, #ffaa00, #cc4400);
+            border:3px solid #fff;
+            box-shadow:0 0 30px rgba(255,100,0,0.8), inset 0 -4px 8px rgba(0,0,0,0.3);
+            font-size:28px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            cursor:pointer;
+            z-index:10;
+            transition:transform 0.2s, opacity 0.3s;
+            font-weight:700;
+            color:#fff;
+            text-shadow:0 0 10px rgba(0,0,0,0.5);
+            user-select:none;
+            animation:fire-btn-float 1.5s ease-in-out infinite alternate;
+        }
+        .fire-btn:hover { transform:scale(1.15); }
+        .fire-btn.used {
+            opacity:0;
+            pointer-events:none;
+            transform:scale(0);
+            transition:all 0.4s;
+        }
+        @keyframes fire-btn-float {
+            0% { transform:translateY(0); }
+            100% { transform:translateY(-10px); }
+        }
+        #fireOverlay .fire-status {
+            font-size:15px;
+            color:#fff;
+            margin-top:8px;
+            text-shadow:0 0 10px rgba(0,0,0,0.8);
+        }
+
+        /* ===== FORCED BET ===== */
+        #forcedBetOverlay {
+            position:absolute; inset:0; z-index:180; background:rgba(0,0,0,0.88);
+            display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px;
+        }
+        .forced-bet-panel {
+            background:linear-gradient(180deg, var(--panel), var(--panel2));
+            border:2px solid var(--flame1);
+            border-radius:16px;
+            padding:24px 20px;
+            max-width:400px;
+            width:100%;
+            text-align:center;
+            box-shadow:0 0 50px rgba(255,46,46,0.5);
+        }
+        .forced-bet-panel .phoenix-icon { font-size:60px; margin-bottom:6px; filter:drop-shadow(0 0 20px rgba(255,46,46,0.6)); }
+        .forced-bet-panel h2 { font-family:var(--font-display); color:var(--flame1); font-size:18px; margin:6px 0; }
+        .forced-bet-panel .bet-amount { font-size:22px; color:var(--gold); margin:8px 0; font-family:var(--font-display); }
+        .forced-bet-panel .bet-desc { font-size:13px; color:var(--dim); margin:6px 0; }
+        .forced-bet-actions {
+            display:flex; gap:12px; justify-content:center; margin-top:12px; flex-wrap:wrap;
+        }
+        .forced-bet-actions .primary-btn { min-width:100px; }
+        .forced-bet-actions .primary-btn.danger { background:linear-gradient(90deg, var(--flame1), #aa0000); color:#fff; }
+
+        /* ===== PHOENIX AUTO OVERLAY ===== */
+        #phoenixAutoOverlay{
+            position:absolute; inset:0; z-index:170; background:rgba(0,0,0,0.85);
+            display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px;
+        }
+        .phoenix-auto-panel{
+            background:linear-gradient(180deg, var(--panel), var(--panel2));
+            border:2px solid var(--flame1); border-radius:16px; padding:24px 20px;
+            max-width:420px; width:100%; text-align:center;
+            box-shadow:0 0 50px rgba(255,46,46,0.5);
+        }
+        .phoenix-auto-panel .phoenix-icon{ font-size:60px; margin-bottom:6px; filter:drop-shadow(0 0 20px rgba(255,46,46,0.6)); }
+        .phoenix-auto-panel .auto-title{ font-family:var(--font-display); font-size:16px; color:var(--flame1); margin:4px 0; }
+        .phoenix-auto-panel .auto-phrase{ font-size:14px; color:var(--text); margin:8px 0; min-height:30px; font-style:italic; }
+        .phoenix-auto-panel .auto-status{ font-size:13px; color:var(--dim); margin-top:6px; }
+        .phoenix-auto-panel .auto-bet{ font-size:16px; color:var(--gold); margin:4px 0; font-family:var(--font-display); }
+        .ember{
+            position:absolute; pointer-events:none; z-index:0;
+            font-size:14px; animation:ember-rise 3s linear infinite;
+            opacity:0.6;
+        }
+        @keyframes ember-rise{
+            0%{ transform:translateY(0) scale(0.5); opacity:0.8; }
+            100%{ transform:translateY(-120px) scale(1.5); opacity:0; }
+        }
+
+        /* ===== PISCAR ===== */
+        .screen-flash {
+            animation:screen-flash-anim 0.2s steps(2) 8;
+        }
+        @keyframes screen-flash-anim {
+            0%,100% { background-color: transparent; }
+            50% { background-color: rgba(255,255,255,0.7); }
+        }
+        .phoenix-bg{
+            position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+            font-size:200px; opacity:0.15; pointer-events:none; z-index:1;
+            animation:phoenix-bg-slow 7s ease-in-out infinite;
+            filter:drop-shadow(0 0 40px rgba(255,46,46,0.6)) drop-shadow(0 0 80px rgba(255,138,61,0.3));
+            text-shadow:0 0 30px #ff4500, 0 0 60px #ff8a3d;
+        }
+        .phoenix-bg.active{
+            animation:phoenix-bg-fast 0.8s linear infinite;
+            opacity:0.4;
+            filter:drop-shadow(0 0 60px rgba(255,210,63,0.9)) drop-shadow(0 0 100px rgba(255,46,46,0.6));
+        }
+        @keyframes phoenix-bg-slow{
+            0%,100%{transform:translate(-50%,-50%) scale(1) rotate(0deg); opacity:0.15;}
+            50%{transform:translate(-50%,-58%) scale(1.15) rotate(10deg); opacity:0.25;}
+        }
+        @keyframes phoenix-bg-fast{
+            0%,100%{transform:translate(-50%,-50%) scale(1.25) rotate(-8deg); opacity:0.4;}
+            50%{transform:translate(-50%,-58%) scale(1.35) rotate(8deg); opacity:0.55;}
+        }
+        .volume-control{
+            display:flex; align-items:center; justify-content:center; gap:10px;
+            margin:4px 0; padding:8px; border:1px solid var(--line); border-radius:8px;
+            background:rgba(0,0,0,0.2); color:var(--text); font-family:var(--font-body); font-size:11px;
+        }
+        .volume-control input[type="range"]{
+            width:160px; accent-color:var(--flame1); cursor:pointer;
+        }
+        .shop-balance{
+            font-size:14px; color:var(--gold); margin-bottom:8px; text-align:center;
+            font-family:var(--font-display); letter-spacing:1px;
+        }
+        @media (max-width:600px){
+            .app .reel{ width:70px; height:88px; font-size:36px; }
+            .app .balance-value{ font-size:22px; }
+            .app .bet-value{ font-size:13px; min-width:60px; }
+            .app .spin-btn{ font-size:11px; padding:6px; max-width:100%; }
+            .app .result-msg{ font-size:10px; min-height:14px; }
+            .app .game-top .badge{ font-size:9px; padding:2px 6px; }
+            .app .icon-btn{ font-size:9px; padding:3px 5px; }
+            .app .primary-btn{ font-size:10px; padding:8px 12px; min-width:100px; }
+            .app .reels-row{ gap:10px; min-height:100px; }
+            .app .screen{ padding:12px 14px; }
+            .challenge-panel{ padding:16px; }
+            .challenge-panel .phoenix-icon{ font-size:48px; }
+            .challenge-panel .challenge-timer{ font-size:28px; }
+            .fire-btn{ width:50px; height:50px; font-size:18px; }
+            .fire-panel{ padding:16px; }
+            .card{ width:80px; height:110px; font-size:36px; }
+            .card.revealed .card-icon{ font-size:28px; }
+            .card.revealed .card-label{ font-size:9px; }
+            .shop-panel{ padding:12px; }
+            .challenge-options button { font-size:10px; padding:6px 4px; }
+            .challenge-options { grid-template-columns:1fr; }
+        }
+        @media (max-width:400px){
+            .app .reel{ width:60px; height:76px; font-size:30px; }
+            .app .balance-value{ font-size:18px; }
+            .app .bet-value{ font-size:12px; min-width:50px; }
+            .app .step-btn{ width:24px; height:24px; font-size:12px; }
+            .fire-btn{ width:44px; height:44px; font-size:16px; }
+            .card{ width:70px; height:96px; font-size:30px; }
+            .primary-btn, .spin-btn{ min-width:80px; padding:6px 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app pixel-on" id="app">
+
+    <!-- TELA DE AVISO -->
+    <section class="screen" id="screen-warning">
+        <div class="warning-wrap">
+            <div class="warning-title">⚠️ ATENÇÃO!</div>
+            <p class="warning-text">
+                <strong>Jogo gratuito</strong> – apenas dinheiro virtual.<br>
+                Não é uma casa de apostas – nenhum valor real é cobrado.<br>
+                Divirta-se!
+            </p>
+            <p class="warning-extra">
+                ⚠️ Este jogo não é para ser usado como treinamento para casas de apostas.
+            </p>
+            <p class="warning-info">
+                🧩 Emojis Unicode (uso livre) · 👶 +12 anos (fantasia e sustos leves) · 🔓 Código aberto
+            </p>
+            <div class="warning-loading">
+                <span class="phoenix-load">🐦‍🔥</span>
+                <span class="load-text">Carregando...</span>
+            </div>
+            <div class="warning-progress">
+                <div class="warning-progress-bar" id="progressBar"></div>
+            </div>
+            <div class="warning-timer" id="warningTimer">10</div>
+        </div>
+    </section>
+
+    <!-- OPENING -->
+    <section class="screen hidden" id="screen-opening">
+        <div class="menu-wrap">
+            <div class="boot-lines" id="bootLines"></div>
+            <div class="opening-content hidden" id="openingContent">
+                <div class="opening-icon">🐦‍🔥</div>
+                <h1 class="flicker-text opening-title">EMBER SPIN</h1>
+                <p class="opening-sub">Aposte e prepare-se: a Fênix vai te perturbar o tempo inteiro!</p>
+                <button class="primary-btn" id="enterBtn">▶ Entrar</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- MENU -->
+    <section class="screen hidden" id="screen-menu">
+        <div class="menu-wrap">
+            <div class="opening-icon small">🐦‍🔥</div>
+            <h2 class="flicker-text">EMBER SPIN</h2>
+            <div class="menu-buttons">
+                <button class="primary-btn wide" id="menuStart">🔥 Iniciar Jogo</button>
+                <button class="primary-btn ghost wide" id="menuOptions">⚙️ Opções</button>
+                <button class="primary-btn ghost wide" id="menuCredits">📜 Créditos</button>
+                <button class="primary-btn ghost wide" id="menuExit">🚪 Sair</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- OPTIONS -->
+    <section class="screen hidden" id="screen-options">
+        <div class="menu-wrap">
+            <h2>⚙️ Opções</h2>
+            <div class="menu-buttons">
+                <button class="primary-btn wide" id="musicToggleBtn">🔊 Música: ON</button>
+                <div class="volume-control">
+                    <span>🎵 Volume:</span>
+                    <input type="range" id="volumeSlider" min="0" max="100" step="25" value="75">
+                    <span id="volumeValue">75%</span>
+                </div>
+                <button class="primary-btn wide" id="pixelToggleBtn">👾 Pixel 8-bit: ON</button>
+                <button class="primary-btn ghost wide" id="optionsBack">🔙 Voltar</button>
+            </div>
+            <div class="save-load-section">
+                <h3>💾 Carregar Progresso</h3>
+                <input type="text" id="loadSaveInput" placeholder="Código de 8 caracteres" maxlength="8" autocomplete="off">
+                <div class="load-row">
+                    <button class="primary-btn" id="loadSaveBtn">📥 Carregar</button>
+                </div>
+                <div id="loadSaveMsg"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CREDITS -->
+    <section class="screen hidden" id="screen-credits">
+        <div class="menu-wrap">
+            <div class="opening-icon small hidden" id="creditsWinIcon">🐦‍🔥</div>
+            <h2 id="creditsTitle">📜 Créditos</h2>
+            <p class="unlock-msg hidden" id="creditsWinMsg">🏆 Você venceu o Nível Fênix e quebrou a maldição!<br>Pontuação final: <span id="creditsScore">0</span> pts</p>
+            <p class="credits-text">Criado por João Samuel (UFVJM)</p>
+            <button class="primary-btn ghost wide" id="creditsBack">🔙 Sair</button>
+        </div>
+    </section>
+
+    <!-- EXIT -->
+    <section class="screen hidden" id="screen-exit">
+        <div class="menu-wrap">
+            <div class="opening-icon">🕯️</div>
+            <h2>Até a próxima...</h2>
+            <p class="credits-text">As chamas se apagam por aqui. Você já pode fechar esta aba.</p>
+            <button class="primary-btn ghost wide" id="exitBack">🔙 Voltar ao Menu</button>
+        </div>
+    </section>
+
+    <!-- TUTORIAL -->
+    <section class="screen hidden" id="screen-tutorial">
+        <div class="tutorial-wrap">
+            <button class="tutorial-skip" id="tutSkip">⏭ Pular tutorial</button>
+            <div class="tutorial-badge" id="tutBadge">1 / 6</div>
+            <h2 id="tutTitle">—</h2>
+            <p id="tutText">—</p>
+            <div class="tutorial-nav">
+                <button class="primary-btn ghost" id="tutPrev">◀ Voltar</button>
+                <button class="primary-btn" id="tutNext">Próximo ▶</button>
+                <button class="primary-btn hidden" id="tutStart">🔥 Começar</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- INTRO DA FÊNIX -->
+    <section class="screen hidden" id="screen-fenix-intro">
+        <div class="menu-wrap" style="justify-content:center;">
+            <div class="fenix-big">🐦‍🔥</div>
+            <div class="fenix-phrase" id="fenixIntroPhrase">Você não pode me vencer!</div>
+            <div class="fenix-countdown" id="fenixCountdown">5</div>
+        </div>
+    </section>
+
+    <!-- DIFFICULTY -->
+    <section class="screen hidden" id="screen-difficulty">
+        <div class="intro">
+            <h2>🔥 Escolha sua chama</h2>
+            <p>Cada nível tem sua própria meta. Vença um nível para desbloquear o próximo — e quebre a maldição de vez no Nível Fênix.</p>
+        </div>
+        <div class="diff-grid" id="diffGrid"></div>
+    </section>
+
+    <!-- GAME SCREEN -->
+    <section class="screen hidden" id="screen-game">
+        <div class="game-top">
+            <span class="badge" id="diffBadge">—</span>
+            <span class="badge" id="scoreBadge">🏆 0</span>
+            <div class="upg-chips" id="upgradeChips"></div>
+            <button class="icon-btn" id="gameMenuBtn">☰ Menu</button>
+        </div>
+        <div class="balance-panel">
+            <div class="balance-label">💰 SALDO</div>
+            <div class="balance-value" id="balanceValue">💰 0,00</div>
+            <div class="floaters" id="floaters"></div>
+        </div>
+
+        <!-- HISTÓRICO -->
+        <div class="history-panel" id="historyPanel">
+            <div class="history-dot" id="h0"></div>
+            <div class="history-dot" id="h1"></div>
+            <div class="history-dot" id="h2"></div>
+            <div class="history-dot" id="h3"></div>
+            <div class="history-dot" id="h4"></div>
+            <div class="history-dot" id="h5"></div>
+        </div>
+
+        <div class="reels-row" id="reelsRow">
+            <div class="phoenix-bg" id="phoenixBg">🐦‍🔥</div>
+            <span class="ember" style="left:5%; animation-delay:0s;">🔥</span>
+            <span class="ember" style="left:25%; animation-delay:1.2s;">✨</span>
+            <span class="ember" style="left:70%; animation-delay:0.5s;">🔥</span>
+            <span class="ember" style="left:90%; animation-delay:2s;">✨</span>
+            <span class="ember" style="left:40%; animation-delay:0.8s;">🔥</span>
+            <span class="ember" style="left:55%; animation-delay:1.6s;">✨</span>
+            <div class="reel" id="reel0"><span class="sym">❔</span></div>
+            <div class="reel" id="reel1"><span class="sym">❔</span></div>
+            <div class="reel" id="reel2"><span class="sym">❔</span></div>
+        </div>
+        <div class="result-msg" id="resultMsg">💡 Escolha o valor e gire!</div>
+        <div class="bet-panel">
+            <div class="bet-row">
+                <button class="step-btn" id="betMinus">–</button>
+                <div class="bet-value" id="betValueDisplay">💰 2,00</div>
+                <button class="step-btn" id="betPlus">+</button>
+            </div>
+            <div class="quick-row">
+                <button class="quick-btn" data-q="min">⬇ Mín</button>
+                <button class="quick-btn" data-q="half">½ Metade</button>
+                <button class="quick-btn" data-q="max">⬆ Máx</button>
+            </div>
+            <div class="spin-area">
+                <button class="spin-btn" id="spinBtn">🎰 GIRAR 🔥</button>
+            </div>
+        </div>
+        <details class="paytable">
+            <summary>📊 Tabela de pagamentos (com melhorias)</summary>
+            <div id="paytableBody"></div>
+        </details>
+        <div class="footnote">🎮 Jogo fictício com dinheiro virtual — apenas para diversão.</div>
+    </section>
+
+    <!-- SHOP OVERLAY -->
+    <div class="overlay hidden" id="shopOverlay">
+        <div class="shop-panel">
+            <div class="shop-head">
+                <h2>🛒 Loja da Fênix</h2>
+            </div>
+            <div class="shop-balance" id="shopBalance">💰 0,00</div>
+            <div class="upgrade-list" id="upgradeList"></div>
+            <button class="shop-continue" id="shopContinue">✅ Continuar</button>
+        </div>
+    </div>
+
+    <!-- MENU IN-GAME -->
+    <div class="overlay hidden" id="gameMenuOverlay">
+        <div class="menu-panel">
+            <div class="menu-head">
+                <h2>☰ Menu</h2>
+                <button class="close-btn" id="closeGameMenu">✕</button>
+            </div>
+            <div class="menu-options">
+                <button class="primary-btn wide" id="gameMenuOptions">⚙️ Opções</button>
+                <button class="primary-btn wide" id="gameMenuSave">💾 Salvar Progresso</button>
+                <button class="primary-btn ghost wide" id="gameMenuQuit">🚪 Voltar ao Menu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CHALLENGE OVERLAY -->
+    <div id="challengeOverlay" class="hidden">
+        <div class="challenge-panel">
+            <div class="challenge-phoenix-icon">🐦‍🔥</div>
+            <div class="challenge-phoenix-speech">🔥 "Duvido acertar!"</div>
+            <div class="challenge-title">❓ DESAFIO DA FÊNIX</div>
+            <div class="challenge-text" id="challengeText">Responda:</div>
+            <div class="challenge-timer" id="challengeTimer">10</div>
+            <div class="challenge-options" id="challengeOptions"></div>
+            <div id="challengeResult"></div>
+        </div>
+    </div>
+
+    <!-- FIRE OVERLAY -->
+    <div id="fireOverlay" class="hidden">
+        <div class="fire-bg-particles"></div>
+        <div class="fire-emoji-large">🔥</div>
+        <div class="fire-emoji-large">🔥</div>
+        <div class="fire-emoji-large">🔥</div>
+        <div class="fire-emoji-large">🔥</div>
+        <div class="fire-emoji-large">🔥</div>
+        <div class="fire-panel">
+            <h2>🔥 FOGO! 🔥</h2>
+            <div class="fire-loss" id="fireLoss">💰 0,00</div>
+            <div class="fire-timer" id="fireTimer">⏱️ 0s</div>
+            <div class="fire-instruction">💧 Clique nos botões para apagar o fogo!</div>
+            <div class="fire-status" id="fireStatus">Botões restantes: 0</div>
+        </div>
+    </div>
+
+    <!-- SORTE OU AZAR (CARTAS) -->
+    <div id="cardChoiceOverlay" class="hidden">
+        <div class="card-panel">
+            <h2>🃏 Sorte ou Azar</h2>
+            <div class="card-sub">Escolha uma carta</div>
+            <div class="card-container" id="cardContainer">
+                <div class="card" data-index="0">
+                    <span class="card-back">🃏</span>
+                    <span class="card-front"></span>
+                </div>
+                <div class="card" data-index="1">
+                    <span class="card-back">🃏</span>
+                    <span class="card-front"></span>
+                </div>
+                <div class="card" data-index="2">
+                    <span class="card-back">🃏</span>
+                    <span class="card-front"></span>
+                </div>
+            </div>
+            <div id="cardResult"></div>
+        </div>
+    </div>
+
+    <!-- PHOENIX AUTO SPIN (EVENTO) -->
+    <div id="phoenixAutoOverlay" class="hidden">
+        <div class="phoenix-auto-panel">
+            <div class="phoenix-icon">🐦‍🔥</div>
+            <div class="auto-title">🔥 A Fênix quer jogar!</div>
+            <div class="auto-phrase" id="autoPhrase">Deixa comigo perdedor!</div>
+            <div class="auto-bet" id="autoBet">💰 Aposta: 0,00</div>
+            <div class="auto-status" id="autoStatus">Giro 1 de 3...</div>
+        </div>
+    </div>
+
+    <!-- APOSTA FORÇADA -->
+    <div id="forcedBetOverlay" class="hidden">
+        <div class="forced-bet-panel">
+            <div class="phoenix-icon">🐦‍🔥</div>
+            <h2>⚡ APOSTE OU DESAPAREÇA!</h2>
+            <p class="bet-desc">A Fênix exige que você arrisque <strong>50% do seu saldo</strong> agora!</p>
+            <div class="bet-amount" id="forcedBetAmount">💰 0,00</div>
+            <p class="bet-desc" style="font-size:11px; color:var(--dim);">Se recusar, perderá <strong>20%</strong> do saldo imediatamente.</p>
+            <div class="forced-bet-actions">
+                <button class="primary-btn" id="forcedBetAccept">🔥 Aceitar</button>
+                <button class="primary-btn danger" id="forcedBetDecline">❌ Recusar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- GAME OVER -->
+    <section class="screen hidden" id="screen-gameover">
+        <div class="end-card">
+            <div class="end-emoji">💀</div>
+            <h2 class="flicker-text">Fim de jogo</h2>
+            <p>Seu saldo não foi suficiente para continuar.</p>
+            <p id="gameoverFlavor" style="font-size:11px; color:var(--dim);"></p>
+            <p style="font-size:11px; color:var(--dim); margin-bottom:14px;">🏆 Pontuação da partida: <b id="gameoverScore">0</b> pts</p>
+            <div class="gameover-actions">
+                <button class="primary-btn" id="restartBtn">🔙 Voltar ao Menu</button>
+                <button class="primary-btn" id="retryBtn">🔥 Tentar Novamente</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- VICTORY -->
+    <section class="screen hidden" id="screen-victory">
+        <div class="end-card">
+            <div class="phoenix-big">🐦‍🔥</div>
+            <h2 style="color:var(--gold)" id="victoryTitle">🏆 Nível Concluído!</h2>
+            <p id="victoryText">Você alcançou a meta deste nível.</p>
+            <p class="unlock-msg hidden" id="victoryUnlockMsg">✨ Próximo nível desbloqueado! ✨</p>
+            <p style="font-size:11px; color:var(--dim); margin-bottom:14px;">🏆 Pontuação da partida: <b id="victoryScore">0</b> pts</p>
+            <div>
+                <button class="primary-btn" id="victoryContinue">▶ Continuar Jogando</button>
+                <button class="primary-btn ghost" id="victoryRestart">🔙 Voltar ao Menu</button>
+            </div>
+        </div>
+        <div id="victoryParticles"></div>
+    </section>
+
+</div>
+
+<script>
+// ============================================================
+// CÓDIGO COMPLETO OTIMIZADO - EMBER SPIN (SEM AUTO-SPIN)
+// ============================================================
+
+const LEVELS_ORDER = ['nivel1','nivel2','nivel3','nivelfenix'];
+const DIFFS = {
+    nivel1: {
+        key:'nivel1', label:'🔥 Nível 1', desc:'Para sentir a chama sem se queimar.', start:100, betMin:2, betMax:20, goal:1000,
+        rules:['💰 Aposta R$ 2–20 (aumentável)','🐦‍🔥 Fênix ~4%','❓ Desafios 10s','🔥 Fogo, 🃏 Cartas','⚡ Aposta forçada','🎯 Meta: R$ 1.000'],
+        table:[{key:'clover', weight:30, mult:1.5},{key:'strawberry', weight:20, mult:2.5},
+            {key:'diamond', weight:10, mult:6},{key:'phoenix', weight:4, mult:15},{key:'vazio', weight:36, mult:0}]
+    },
+    nivel2: {
+        key:'nivel2', label:'💎 Nível 2', desc:'Equilíbrio entre risco e recompensa.', start:50, betMin:2, betMax:15, goal:10000,
+        rules:['💰 R$ 2–15','🐦‍🔥 ~2,5%','❓ 5s','🎯 R$ 10.000'],
+        table:[{key:'clover', weight:20, mult:2},{key:'strawberry', weight:14, mult:4},
+            {key:'diamond', weight:7, mult:10},{key:'phoenix', weight:2.5, mult:25},{key:'vazio', weight:56.5, mult:0}]
+    },
+    nivel3: {
+        key:'nivel3', label:'⭐ Nível 3', desc:'Poucas penas caem fáceis — mas valem bem mais.', start:25, betMin:2, betMax:10, goal:100000,
+        rules:['💰 R$ 2–10','🐦‍🔥 ~1,2%','❓ 5s','🎯 R$ 100.000'],
+        table:[{key:'clover', weight:14, mult:3},{key:'strawberry', weight:9, mult:6},
+            {key:'diamond', weight:4, mult:16},{key:'phoenix', weight:1.2, mult:45},{key:'vazio', weight:71.8, mult:0}]
+    },
+    nivelfenix: {
+        key:'nivelfenix', label:'🐦‍🔥 Nível Fênix', desc:'A fênix quase nunca renasce. Quase.', start:10, betMin:2, betMax:null, goal:1000000,
+        rules:['💰 Mín. R$ 2, sem máximo','🐦‍🔥 ~0,4%, paga 100x','❓ 3-5s','🎯 R$ 1.000.000'],
+        table:[{key:'clover', weight:8, mult:4},{key:'strawberry', weight:5, mult:9},
+            {key:'diamond', weight:2, mult:25},{key:'phoenix', weight:0.4, mult:100},{key:'vazio', weight:84.6, mult:0}]
+    }
+};
+
+const SYMBOLS = {
+    clover:{emoji:'🍀', label:'Trevo'}, strawberry:{emoji:'🍓', label:'Morango'},
+    diamond:{emoji:'💎', label:'Diamante'}, phoenix:{emoji:'🐦‍🔥', label:'Fênix'}, vazio:{emoji:'💨', label:'Vazio'}
+};
+
+const UPGRADES = {
+    pena:{name:'🪶 Pena Dourada', desc:'+0,2x no Trevo e Morango', icon:'🪶', baseCost:40, growth:1.55, affects:['clover','strawberry'], bonusPerLevel:0.2},
+    diamante:{name:'💠 Garra de Diamante', desc:'+1x no Diamante', icon:'💠', baseCost:150, growth:1.65, affects:['diamond'], bonusPerLevel:1},
+    fenix:{name:'🔥 Renascimento', desc:'+5x na Fênix', icon:'🔥', baseCost:500, growth:1.8, affects:['phoenix'], bonusPerLevel:5},
+    limite:{name:'⬆️ Asas do Limite', desc:'+20% no valor máximo da aposta', icon:'⬆️', baseCost:100, growth:1.7, affects:[], bonusPerLevel:0.2}
+};
+
+const QUESTION_BANK = [
+    { question: 'Qual é o símbolo da Fênix?', options: ['🐦‍🔥', '🍀', '💎', '🍓'], answer: 0 },
+    { question: 'Quantos carretéis existem?', options: ['2', '3', '4', '5'], answer: 1 },
+    { question: 'Qual símbolo paga mais no Nível Fênix?', options: ['Trevo', 'Morango', 'Diamante', 'Fênix'], answer: 3 },
+    { question: 'Valor da aposta mínima?', options: ['R$ 1,00', 'R$ 2,00', 'R$ 5,00', 'R$ 10,00'], answer: 1 },
+    { question: 'Fênix aparece mais em qual nível?', options: ['Nível 1', 'Nível 2', 'Nível 3', 'Nível Fênix'], answer: 0 },
+    { question: 'O que acontece com três símbolos iguais?', options: ['Perde', 'Ganha multiplicador', 'Bônus', 'Nada'], answer: 1 },
+    { question: 'Qual upgrade aumenta o limite máximo?', options: ['Pena Dourada', 'Garra de Diamante', 'Renascimento', 'Asas do Limite'], answer: 3 },
+    { question: 'Tempo do desafio no Nível 1?', options: ['5s', '10s', '15s', '20s'], answer: 1 },
+    { question: 'Evento que exige escolher uma carta?', options: ['Fogo', 'Sorte ou Azar', 'Aposta Forçada', 'Fênix Gira'], answer: 1 },
+    { question: 'O que a Fênix pede na aposta forçada?', options: ['50% do saldo', '100% do saldo', 'Dá dinheiro', 'Nada'], answer: 0 }
+];
+
+const TUTORIAL_STEPS = [
+    {title:'💰 Como Apostar', text:'Ajuste a aposta com – e +, ou use os atalhos. Toque em GIRAR. A aposta é descontada antes do giro.'},
+    {title:'🎰 Símbolos', text:'Três símbolos iguais = vitória. Veja a tabela de pagamentos.'},
+    {title:'🐦‍🔥 Eventos da Fênix', text:'A Fênix pode aparecer com desafios, fogo, sorte/azar, auto-spin ou aposta forçada.'},
+    {title:'⚡ Aposta Forçada', text:'Fênix exige 50% do saldo. Aceitar = giro com multiplicador 2x. Recusar = perde 20%.'},
+    {title:'🛒 Loja', text:'A cada R$ 100 conquistados, a loja abre. Compre melhorias permanentes.'},
+    {title:'🎯 Progresso', text:'Alcance a meta de saldo para vencer o nível e desbloquear o próximo.'}
+];
+
+const HUMILIATING_PHRASES = [
+    "Aposte mais, perdedor!", "Vai perder tudo!", "Sua sorte acabou!",
+    "Eu sou a melhor!", "Você é fraco!", "Desista enquanto pode!",
+    "A fênix nunca morre!", "Prepare-se para perder!", "Sua derrota é certa!",
+    "Aposte, se tiver coragem!", "Você é uma piada!", "A fênix ri de você!",
+    "Mais sorte na próxima, não é?", "Eu disse que você ia perder!", "Volte quando estiver pronto!"
+];
+
+const PROVOCATIVE_PHRASES = [
+    "Você não pode me vencer!", "Eu sou o melhor!", "Sua sorte acabou!",
+    "A fênix nunca morre!", "Prepare-se para perder!", "Você é fraco!",
+    "Desista enquanto pode!", "Eu sou o fogo eterno!", "Sua derrota é certa!"
+];
+
+const DEBOCHING_PHRASES = [
+    "Hahaha, perdeu feio!", "Tente novamente, perdedor!", "A fênix ri de você!",
+    "Que azar hein?", "Você é tão previsível!", "Volte quando estiver pronto!",
+    "Eu disse que você ia perder!", "Mais sorte na próxima, não é?"
+];
+
+const BOOT_LINES = ['CARREGANDO...', 'INICIALIZANDO SISTEMA...', 'PREPARANDO JOGO...', 'PRONTO.'];
+const GAMEOVER_FLAVORS = ['Que pena!', 'Tente novamente!', 'Não foi dessa vez!', 'Continue tentando!'];
+
+// Frases da Fênix quando o jogador perde
+const PHOENIX_LOSE_PHRASES = [
+    "🐦‍🔥 A Fênix riu da sua aposta! Perdeu 💰 ",
+    "🐦‍🔥 A Fênix queimou seu dinheiro! Perdeu 💰 ",
+    "🐦‍🔥 A Fênix te zoou! Perdeu 💰 ",
+    "🐦‍🔥 A Fênix não perdoou! Perdeu 💰 ",
+    "🐦‍🔥 A Fênix adorou ver você perder! Perdeu 💰 ",
+    "🐦‍🔥 A Fênix diz: 'Perdeu, perdedor!' Perdeu 💰 ",
+    "🐦‍🔥 A Fênix gargalhou enquanto você perdia! Perdeu 💰 ",
+    "🐦‍🔥 A Fênix se divertiu com sua derrota! Perdeu 💰 "
+];
+
+// ===== ESTADO GLOBAL =====
+let state = {
+    difficulty:null, saldo:0, displayedSaldo:0, betValue:2, score:0, levelGoalReached:false,
+    upgrades:{pena:0, diamante:0, fenix:0, limite:0},
+    unlockedLevels:{nivel1:true, nivel2:false, nivel3:false, nivelfenix:false},
+    spinning:false,
+    musicVolume:75, pixelOn:true,
+    lastShopMilestone:0,
+    nextSpinMultiplier:1,
+    betMinFactor:1, betMinFactorRemaining:0,
+    consecutiveWins:0,
+    phoenixAutoActive:false,
+    forcedBetPending:false, forcedBetAmount:0,
+    shopPending:false,
+    // Histórico
+    history:[], // array de { symbol, win }
+    // Modo invertido
+    invertedMode:false,
+    invertedTimer:null,
+    invertedTimeout:null,
+    invertedSpinsUntil:0,
+    invertedActive:false
+};
+let pendingDifficulty=null, tutIndex=0, optionsReturn='menu';
+let challengeActive = false;
+let spinsSinceLastHaunt = 0, spinsUntilHaunt = 0;
+let fireInterval = null, fireButtonsRemaining = 0, fireTimerSeconds = 0;
+
+// ===== REFERÊNCIAS DOM =====
+const $ = id => document.getElementById(id);
+const appEl=$('app'), diffGrid=$('diffGrid'), diffBadge=$('diffBadge'), scoreBadge=$('scoreBadge'),
+    upgradeChips=$('upgradeChips'), gameMenuBtn=$('gameMenuBtn'),
+    balanceValueEl=$('balanceValue'), floatersEl=$('floaters'),
+    reelsRow=$('reelsRow'), resultMsg=$('resultMsg'), betMinus=$('betMinus'), betPlus=$('betPlus'),
+    betValueDisplay=$('betValueDisplay'), spinBtn=$('spinBtn'),
+    paytableBody=$('paytableBody'), shopOverlay=$('shopOverlay'), upgradeList=$('upgradeList'),
+    shopBalance=$('shopBalance'), gameMenuOverlay=$('gameMenuOverlay'), closeGameMenu=$('closeGameMenu'),
+    gameMenuOptions=$('gameMenuOptions'), gameMenuSave=$('gameMenuSave'), gameMenuQuit=$('gameMenuQuit'),
+    restartBtn=$('restartBtn'), retryBtn=$('retryBtn'), gameoverScore=$('gameoverScore'),
+    victoryTitle=$('victoryTitle'), victoryText=$('victoryText'), victoryScore=$('victoryScore'),
+    victoryUnlockMsg=$('victoryUnlockMsg'), victoryContinue=$('victoryContinue'),
+    victoryRestart=$('victoryRestart'), victoryParticles=$('victoryParticles'),
+    creditsTitle=$('creditsTitle'), creditsWinMsg=$('creditsWinMsg'), creditsWinIcon=$('creditsWinIcon'),
+    creditsScore=$('creditsScore'), enterBtn=$('enterBtn'), menuStart=$('menuStart'),
+    menuOptions=$('menuOptions'), menuCredits=$('menuCredits'), menuExit=$('menuExit'),
+    musicToggleBtn=$('musicToggleBtn'), pixelToggleBtn=$('pixelToggleBtn'),
+    optionsBack=$('optionsBack'), creditsBack=$('creditsBack'), exitBack=$('exitBack'),
+    tutSkip=$('tutSkip'), tutBadge=$('tutBadge'), tutTitle=$('tutTitle'), tutText=$('tutText'),
+    tutPrev=$('tutPrev'), tutNext=$('tutNext'), tutStart=$('tutStart'),
+    loadSaveInput=$('loadSaveInput'), loadSaveBtn=$('loadSaveBtn'), loadSaveMsg=$('loadSaveMsg'),
+    challengeOverlay=$('challengeOverlay'), challengeTitle=$('challengeTitle'),
+    challengeText=$('challengeText'), challengeTimer=$('challengeTimer'),
+    challengeOptions=$('challengeOptions'), challengeResult=$('challengeResult'),
+    warningTimerEl=$('warningTimer'), progressBar=$('progressBar'),
+    fireOverlay=$('fireOverlay'), fireLoss=$('fireLoss'), fireTimerEl=$('fireTimer'),
+    fireStatus=$('fireStatus'), cardOverlay=$('cardChoiceOverlay'),
+    cardContainer=$('cardContainer'), cardResult=$('cardResult'),
+    shopContinue=$('shopContinue'), fenixIntroPhrase=$('fenixIntroPhrase'),
+    fenixCountdown=$('fenixCountdown'), phoenixBg=$('phoenixBg'),
+    phoenixAutoOverlay=$('phoenixAutoOverlay'), autoPhrase=$('autoPhrase'),
+    autoBet=$('autoBet'), autoStatus=$('autoStatus'),
+    volumeSlider=$('volumeSlider'), volumeValue=$('volumeValue'),
+    forcedBetOverlay=$('forcedBetOverlay'), forcedBetAmount=$('forcedBetAmount'),
+    forcedBetAccept=$('forcedBetAccept'), forcedBetDecline=$('forcedBetDecline');
+
+// ============================================================
+// ÁUDIO (simplificado e otimizado)
+// ============================================================
+let audioCtx=null, musicFilter=null, musicMasterGain=null, musicTimer=null, nextNoteTime=0, current16th=0;
+const BPM=92, CHORDS=[
+    {bass:110, tones:[220,261.63,329.63]},
+    {bass:87.31, tones:[174.61,220,261.63]},
+    {bass:65.41, tones:[130.81,164.81,196]},
+    {bass:98, tones:[196,246.94,293.66]}
+];
+function getMusicGain(){ return state.musicVolume<=0?0:(state.musicVolume/100)*0.9; }
+function ensureAudioCtx(){ if(!audioCtx) audioCtx=new(window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==='suspended') audioCtx.resume(); }
+function scheduleNote(freq,time,dur,type,vol){
+    const osc=audioCtx.createOscillator(), gain=audioCtx.createGain();
+    osc.type=type; osc.frequency.value=freq;
+    osc.connect(gain); gain.connect(musicMasterGain);
+    gain.gain.setValueAtTime(0.0001,time);
+    gain.gain.linearRampToValueAtTime(vol,time+0.015);
+    gain.gain.exponentialRampToValueAtTime(0.0001,time+dur);
+    osc.start(time); osc.stop(time+dur+0.05);
+}
+function musicScheduler(){
+    const sixteenth=(60/BPM)/4;
+    while(nextNoteTime<audioCtx.currentTime+0.12){
+        const chord=CHORDS[Math.floor(current16th/8)%4], pos=current16th%8;
+        if(pos===0) scheduleNote(chord.bass,nextNoteTime,sixteenth*7.6,'triangle',0.16);
+        if(pos%2===0){
+            const idx=(pos/2)%chord.tones.length;
+            scheduleNote(chord.tones[idx],nextNoteTime,sixteenth*1.7,'square',0.07);
+        }
+        nextNoteTime+=sixteenth; current16th=(current16th+1)%32;
+    }
+}
+function startMusic(){
+    if(state.musicVolume<=0) return;
+    ensureAudioCtx();
+    if(musicTimer) return;
+    musicFilter=audioCtx.createBiquadFilter(); musicFilter.type='lowpass'; musicFilter.frequency.value=1600;
+    musicFilter.connect(audioCtx.destination);
+    musicMasterGain=audioCtx.createGain(); musicMasterGain.gain.value=getMusicGain();
+    musicMasterGain.connect(musicFilter);
+    nextNoteTime=audioCtx.currentTime+0.05; current16th=0;
+    musicTimer=setInterval(musicScheduler,25);
+}
+function stopMusic(){ if(musicTimer){ clearInterval(musicTimer); musicTimer=null; } if(musicMasterGain){ const g=musicMasterGain; g.gain.setTargetAtTime(0,audioCtx.currentTime,0.25); setTimeout(()=>{ try{ g.disconnect(); }catch(e){} },500); musicMasterGain=null; musicFilter=null; } }
+function setMusicVolume(vol){ state.musicVolume=Math.max(0,Math.min(100,vol)); if(musicMasterGain) musicMasterGain.gain.setTargetAtTime(getMusicGain(),audioCtx.currentTime,0.1); if(state.musicVolume<=0){ stopMusic(); musicToggleBtn.textContent='🔇 Música: OFF'; } else { if(!musicTimer) startMusic(); musicToggleBtn.textContent='🔊 Música: ON'; } volumeSlider.value=state.musicVolume; volumeValue.textContent=state.musicVolume+'%'; }
+function toggleMusic(){ state.musicVolume>0?setMusicVolume(0):setMusicVolume(75); }
+function playJumpScareSting(){ if(!audioCtx||state.musicVolume<=0) return; const ctx=audioCtx; const buf=ctx.createBuffer(1,ctx.sampleRate*0.4,ctx.sampleRate); const d=buf.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,2); const noise=ctx.createBufferSource(); noise.buffer=buf; const filt=ctx.createBiquadFilter(); filt.type='bandpass'; filt.frequency.value=1200; filt.Q.value=0.7; const gain=ctx.createGain(); gain.gain.value=0.4*(state.musicVolume/100); noise.connect(filt); filt.connect(gain); gain.connect(ctx.destination); noise.start(); [60,64,67].forEach(f=>{ const o=ctx.createOscillator(); o.type='sawtooth'; o.frequency.value=f; const g=ctx.createGain(); const t=ctx.currentTime; o.connect(g); g.connect(ctx.destination); g.gain.setValueAtTime(0.001,t); g.gain.exponentialRampToValueAtTime(0.2*(state.musicVolume/100),t+0.03); g.gain.exponentialRampToValueAtTime(0.0001,t+0.9); o.start(t); o.stop(t+0.95); }); }
+function playBeep(freq,start,dur,type,vol){ ensureAudioCtx(); const o=audioCtx.createOscillator(), g=audioCtx.createGain(); o.type=type; o.frequency.value=freq; o.connect(g); g.connect(audioCtx.destination); const t=audioCtx.currentTime+start; g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(vol*(state.musicVolume/100),t+0.02); g.gain.exponentialRampToValueAtTime(0.0001,t+dur); o.start(t); o.stop(t+dur+0.05); }
+function playWinSound(big){ if(state.musicVolume<=0) return; ensureAudioCtx(); const notes=big?[523.25,659.25,784,1046.5,1318.5]:[523.25,659.25,784]; notes.forEach((f,i)=>playBeep(f,i*0.09,0.22,'square',big?0.22:0.16)); }
+function playLoseSound(){ if(state.musicVolume<=0) return; ensureAudioCtx(); playBeep(220,0,0.18,'sawtooth',0.15); playBeep(164.81,0.09,0.24,'sawtooth',0.12); }
+function playPhoenixSound(){ if(state.musicVolume<=0) return; ensureAudioCtx(); const ctx=audioCtx,t=ctx.currentTime; const o=ctx.createOscillator(); o.type='sawtooth'; const g=ctx.createGain(); o.connect(g); g.connect(ctx.destination); o.frequency.setValueAtTime(220,t); o.frequency.exponentialRampToValueAtTime(1400,t+0.5); g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(0.25*(state.musicVolume/100),t+0.08); g.gain.exponentialRampToValueAtTime(0.0001,t+0.6); o.start(t); o.stop(t+0.65); [880,1108.73,1318.51].forEach((f,i)=>playBeep(f,0.5+i*0.1,0.3,'square',0.2)); }
+function playShopUnlockSound(){ if(state.musicVolume<=0) return; ensureAudioCtx(); [523.25,659.25,784,1046.5].forEach((f,i)=>playBeep(f,i*0.08,0.25,'triangle',0.18)); }
+function playFinalScareSound(done){ if(state.musicVolume<=0){ setTimeout(done,400); return; } ensureAudioCtx(); playJumpScareSting(); const ctx=audioCtx,t=ctx.currentTime; const o=ctx.createOscillator(); o.type='square'; o.frequency.value=55; const g=ctx.createGain(); o.connect(g); g.connect(ctx.destination); g.gain.setValueAtTime(0.5*(state.musicVolume/100),t); g.gain.exponentialRampToValueAtTime(0.0001,t+1.1); o.start(t); o.stop(t+1.15); setTimeout(done,1400); }
+function playCountdownBeep(sec){ if(state.musicVolume<=0||!audioCtx) return; const freq=sec<=3?880:440; const dur=sec<=3?0.15:0.08; playBeep(freq,0,dur,'square',0.15); }
+function playSpinSound(){ if(state.musicVolume<=0) return; ensureAudioCtx(); const ctx=audioCtx,t=ctx.currentTime; const o=ctx.createOscillator(); o.type='sawtooth'; const g=ctx.createGain(); o.connect(g); g.connect(ctx.destination); o.frequency.setValueAtTime(200,t); o.frequency.exponentialRampToValueAtTime(800,t+0.3); g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(0.18*(state.musicVolume/100),t+0.05); g.gain.exponentialRampToValueAtTime(0.0001,t+0.35); o.start(t); o.stop(t+0.4); }
+
+// HAPPY CREDITS
+let happyTimer=null, happyNextNote=0, happy16th=0, happyGain=null, happyFilter=null;
+const HAPPY_CHORDS=[{bass:130.81,tones:[261.63,329.63,392]},{bass:196,tones:[392,493.88,587.33]},{bass:220,tones:[440,523.25,659.25]},{bass:174.61,tones:[349.23,440,523.25]}];
+function scheduleHappyNote(freq,time,dur,type,vol){
+    const osc=audioCtx.createOscillator(), gain=audioCtx.createGain();
+    osc.type=type; osc.frequency.value=freq;
+    osc.connect(gain); gain.connect(happyGain);
+    gain.gain.setValueAtTime(0.0001,time);
+    gain.gain.linearRampToValueAtTime(vol,time+0.015);
+    gain.gain.exponentialRampToValueAtTime(0.0001,time+dur);
+    osc.start(time); osc.stop(time+dur+0.05);
+}
+function happyMusicScheduler(){
+    const BPM2=128, sixteenth=(60/BPM2)/4;
+    while(happyNextNote<audioCtx.currentTime+0.12){
+        const chord=HAPPY_CHORDS[Math.floor(happy16th/8)%4], pos=happy16th%8;
+        if(pos===0) scheduleHappyNote(chord.bass,happyNextNote,sixteenth*7.6,'triangle',0.16);
+        if(pos%2===0){
+            const idx=(pos/2)%chord.tones.length;
+            scheduleHappyNote(chord.tones[idx],happyNextNote,sixteenth*1.7,'square',0.08);
+        }
+        happyNextNote+=sixteenth; happy16th=(happy16th+1)%32;
+    }
+}
+function startHappyMusic(){ if(state.musicVolume<=0) return; ensureAudioCtx(); if(happyTimer) return; happyFilter=audioCtx.createBiquadFilter(); happyFilter.type='lowpass'; happyFilter.frequency.value=2400; happyFilter.connect(audioCtx.destination); happyGain=audioCtx.createGain(); happyGain.gain.value=getMusicGain(); happyGain.connect(happyFilter); happyNextNote=audioCtx.currentTime+0.05; happy16th=0; happyTimer=setInterval(happyMusicScheduler,25); }
+function stopHappyMusic(){ if(happyTimer){ clearInterval(happyTimer); happyTimer=null; } if(happyGain){ const g=happyGain; g.gain.setTargetAtTime(0,audioCtx.currentTime,0.25); setTimeout(()=>{ try{ g.disconnect(); }catch(e){} },500); happyGain=null; happyFilter=null; } }
+
+// ============================================================
+// FUNÇÕES DE TELA E INICIALIZAÇÃO
+// ============================================================
+function startWarningSequence(){
+    let sec=10, total=10;
+    warningTimerEl.textContent=sec;
+    progressBar.style.width='0%';
+    const interval=setInterval(()=>{
+        sec--; const p=((total-sec)/total)*100;
+        progressBar.style.width=p+'%';
+        warningTimerEl.textContent=sec;
+        if(sec<=0){ clearInterval(interval); document.getElementById('screen-warning').classList.add('hidden'); document.getElementById('screen-opening').classList.remove('hidden'); runBootSequence(); }
+    },1000);
+}
+function runBootSequence(){
+    const container=$('bootLines'); container.innerHTML=''; let i=0;
+    function nextLine(){
+        if(i<BOOT_LINES.length){ const p=document.createElement('div'); p.className='boot-line'; p.textContent=BOOT_LINES[i]; container.appendChild(p); i++; setTimeout(nextLine,420); }
+        else { setTimeout(()=>{ container.classList.add('hidden'); $('openingContent').classList.remove('hidden'); },400); }
+    }
+    nextLine();
+}
+function resetSpinState(){
+    state.spinning=false; state.phoenixAutoActive=false;
+    spinBtn.textContent='🎰 GIRAR 🔥'; spinBtn.disabled=false;
+    betMinus.disabled=false; betPlus.disabled=false;
+    document.querySelectorAll('.quick-btn').forEach(b=>b.disabled=false);
+}
+function showScreen(name){
+    ['warning','opening','menu','options','credits','exit','tutorial','fenix-intro','difficulty','game','gameover','victory'].forEach(s=>{
+        const el=$('screen-'+s); if(el) el.classList.toggle('hidden', s!==name);
+    });
+    shopOverlay.classList.add('hidden'); gameMenuOverlay.classList.add('hidden');
+    if(name==='menu'||name==='difficulty') resetSpinState();
+    if(name==='difficulty') renderDifficultyScreen();
+}
+enterBtn.addEventListener('click', ()=>{ ensureAudioCtx(); startMusic(); showScreen('menu'); });
+menuStart.addEventListener('click', ()=> showScreen('difficulty'));
+function openOptions(returnTo){ optionsReturn=returnTo; musicToggleBtn.textContent=state.musicVolume>0?'🔊 Música: ON':'🔇 Música: OFF'; pixelToggleBtn.textContent=state.pixelOn?'👾 Pixel 8-bit: ON':'👾 Pixel 8-bit: OFF'; volumeSlider.value=state.musicVolume; volumeValue.textContent=state.musicVolume+'%'; showScreen('options'); }
+menuOptions.addEventListener('click', ()=> openOptions('menu'));
+gameMenuOptions.addEventListener('click', ()=>{ if(state.spinning||state.phoenixAutoActive) return; gameMenuOverlay.classList.add('hidden'); openOptions('game'); });
+function showCredits(isWin){ creditsTitle.textContent=isWin?'🏆 Você Quebrou a Maldição!':'📜 Créditos'; creditsWinMsg.classList.toggle('hidden',!isWin); creditsWinIcon.classList.toggle('hidden',!isWin); if(isWin) creditsScore.textContent=state.score; stopMusic(); showScreen('credits'); startHappyMusic(); }
+menuCredits.addEventListener('click', ()=> showCredits(false));
+menuExit.addEventListener('click', ()=>{ stopMusic(); try{ window.close(); }catch(e){} showScreen('exit'); });
+musicToggleBtn.addEventListener('click', toggleMusic);
+volumeSlider.addEventListener('input', ()=>{ setMusicVolume(parseInt(volumeSlider.value)); });
+pixelToggleBtn.addEventListener('click', ()=>{ state.pixelOn=!state.pixelOn; appEl.classList.toggle('pixel-on',state.pixelOn); pixelToggleBtn.textContent=state.pixelOn?'👾 Pixel 8-bit: ON':'👾 Pixel 8-bit: OFF'; });
+optionsBack.addEventListener('click', ()=>{ if(optionsReturn==='game') showScreen('game'); else showScreen(optionsReturn); });
+creditsBack.addEventListener('click', ()=>{ stopHappyMusic(); showScreen('menu'); startMusic(); });
+exitBack.addEventListener('click', ()=> showScreen('menu'));
+restartBtn.addEventListener('click', ()=> showScreen('menu'));
+victoryContinue.addEventListener('click', ()=> showScreen('game'));
+victoryRestart.addEventListener('click', ()=> showScreen('menu'));
+
+function showTutorial(key){ pendingDifficulty=key; tutIndex=0; renderTutorialStep(); showScreen('tutorial'); }
+function renderTutorialStep(){
+    const step=TUTORIAL_STEPS[tutIndex];
+    tutBadge.textContent=(tutIndex+1)+' / '+TUTORIAL_STEPS.length;
+    tutTitle.textContent=step.title; tutText.textContent=step.text;
+    tutPrev.disabled=tutIndex===0;
+    const isLast=tutIndex===TUTORIAL_STEPS.length-1;
+    tutNext.classList.toggle('hidden',isLast);
+    tutStart.classList.toggle('hidden',!isLast);
+}
+tutPrev.addEventListener('click', ()=>{ if(tutIndex>0){ tutIndex--; renderTutorialStep(); } });
+tutNext.addEventListener('click', ()=>{ if(tutIndex<TUTORIAL_STEPS.length-1){ tutIndex++; renderTutorialStep(); } });
+tutStart.addEventListener('click', ()=>{ showFenixIntro(); });
+tutSkip.addEventListener('click', ()=>{ showFenixIntro(); });
+
+function showFenixIntro(){
+    showScreen('fenix-intro');
+    let countdown=5;
+    fenixCountdown.textContent=countdown;
+    fenixIntroPhrase.textContent=PROVOCATIVE_PHRASES[Math.floor(Math.random()*PROVOCATIVE_PHRASES.length)];
+    playPhoenixSound();
+    const interval=setInterval(()=>{
+        countdown--;
+        fenixCountdown.textContent=countdown;
+        if(countdown>0) fenixIntroPhrase.textContent=PROVOCATIVE_PHRASES[Math.floor(Math.random()*PROVOCATIVE_PHRASES.length)];
+        playCountdownBeep(countdown);
+        if(countdown<=0){ clearInterval(interval); startGame(pendingDifficulty); }
+    },1000);
+}
+
+function effectiveMult(symKey){
+    const diff=DIFFS[state.difficulty], row=diff.table.find(r=>r.key===symKey);
+    if(row.mult===0) return 0;
+    let bonus=0;
+    for(const uk in UPGRADES){ const up=UPGRADES[uk]; if(up.affects&&up.affects.includes(symKey)) bonus+=state.upgrades[uk]*up.bonusPerLevel; }
+    return row.mult+bonus;
+}
+function buildPaytableHTML(diffKey, includeUpgrades){
+    const diff=DIFFS[diffKey];
+    return diff.table.filter(row=>row.key!=='vazio').map(row=>{
+        const sym=SYMBOLS[row.key], mult=includeUpgrades?effectiveMult(row.key):row.mult;
+        return `<div class="pay-row"><span class="pay-emoji">${sym.emoji}</span><span class="pay-label">${sym.label}</span><span class="pay-chance">${pct(row.weight)}</span><span class="pay-mult">${mult===0?'—':'x'+fmtMultNum(mult)}</span></div>`;
+    }).join('');
+}
+function renderDifficultyScreen(){
+    diffGrid.innerHTML=LEVELS_ORDER.map(key=>{
+        const d=DIFFS[key], locked=!state.unlockedLevels[key];
+        return `<div class="diff-card ${locked?'locked':''} ${key}" data-key="${key}">
+            ${locked?'<div class="lock-badge">🔒</div>':''}
+            <h3>${d.label}</h3>
+            <p class="diff-desc">${d.desc}</p>
+            <div class="diff-start">💰 Início: <b>${fmt(d.start)}</b> · 🎯 Meta: <b>${fmt(d.goal)}</b></div>
+            <ul class="diff-rules">${d.rules.map(r=>`<li>${r}</li>`).join('')}</ul>
+            <div class="card-pay">${buildPaytableHTML(key,false)}</div>
+            <button class="play-btn" ${locked?'disabled':''}>${locked?'🔒 Bloqueado':'🔥 Jogar'}</button>
+        </div>`;
+    }).join('');
+}
+diffGrid.addEventListener('click', e=>{
+    const card=e.target.closest('.diff-card'); if(!card) return;
+    if(card.classList.contains('locked')){ card.style.animation='none'; void card.offsetWidth; card.style.animation='shake 0.5s'; return; }
+    showTutorial(card.dataset.key);
+});
+
+function startGame(key, restoreData){
+    if(restoreData){
+        Object.assign(state, restoreData);
+        state.displayedSaldo=restoreData.saldo;
+        state.betValue=DIFFS[state.difficulty].betMin;
+        state.levelGoalReached=false;
+        state.lastShopMilestone=Math.floor(state.saldo/100)*100;
+        state.forcedBetPending=false; state.shopPending=false;
+        state.invertedMode=false; state.invertedActive=false;
+        if(state.invertedTimer) clearTimeout(state.invertedTimer);
+        if(state.invertedTimeout) clearTimeout(state.invertedTimeout);
+        appEl.classList.remove('inverted-mode');
+    } else {
+        const d=DIFFS[key];
+        state.difficulty=key;
+        state.saldo=d.start; state.displayedSaldo=d.start;
+        state.betValue=d.betMin;
+        state.score=0; state.levelGoalReached=false;
+        state.upgrades={pena:0, diamante:0, fenix:0, limite:0};
+        state.lastShopMilestone=Math.floor(d.start/100)*100;
+        state.forcedBetPending=false; state.shopPending=false;
+        state.invertedMode=false; state.invertedActive=false;
+        if(state.invertedTimer) clearTimeout(state.invertedTimer);
+        if(state.invertedTimeout) clearTimeout(state.invertedTimeout);
+        appEl.classList.remove('inverted-mode');
+    }
+    state.consecutiveWins=0;
+    state.betMinFactor=1; state.betMinFactorRemaining=0;
+    state.nextSpinMultiplier=1;
+    state.history=[];
+    updateHistoryUI();
+    phoenixBg.classList.remove('active');
+    resetSpinState();
+    showScreen('game');
+    const diff=DIFFS[state.difficulty];
+    diffBadge.textContent=diff.label; diffBadge.className='badge '+state.difficulty;
+    updateScoreUI();
+    balanceValueEl.textContent=fmt(state.saldo);
+    betValueDisplay.textContent=fmt(state.betValue);
+    resultMsg.textContent='💡 Escolha o valor e gire!';
+    resultMsg.className='result-msg';
+    paytableBody.innerHTML=buildPaytableHTML(state.difficulty,true);
+    renderUpgradeChips(); resetReelsVisual(); syncBetLimits();
+    scheduleHauntAfterSpins();
+    // Agenda o primeiro modo invertido
+    scheduleInvertedMode();
+}
+function updateScoreUI(){ scoreBadge.textContent='🏆 '+state.score; }
+function resetReelsVisual(){ ['reel0','reel1','reel2'].forEach(id=>{ const el=$(id); el.querySelector('.sym').textContent='❔'; el.classList.remove('spinning','landed'); }); }
+function updateBalanceUI(){ state.displayedSaldo=state.saldo; balanceValueEl.textContent=fmt(state.saldo); syncBetLimits(); checkShopUnlock(); }
+function syncBetLimits(){
+    const diff=DIFFS[state.difficulty]; if(!diff) return;
+    let minBet=diff.betMin;
+    if(state.betMinFactorRemaining>0){ minBet=Math.round(minBet*state.betMinFactor*100)/100; if(minBet<0.5) minBet=0.5; state.betMinFactorRemaining--; if(state.betMinFactorRemaining===0) state.betMinFactor=1; }
+    let maxMultiplier=1+(state.upgrades.limite*0.2);
+    let maxAllowed=diff.betMax!==null?Math.min(diff.betMax*maxMultiplier,state.saldo):state.saldo*maxMultiplier;
+    if(maxAllowed>state.saldo) maxAllowed=state.saldo;
+    if(maxAllowed<minBet) maxAllowed=minBet;
+    if(state.betValue>maxAllowed) state.betValue=Math.max(minBet,Math.floor(maxAllowed));
+    if(state.betValue<minBet) state.betValue=minBet;
+    betValueDisplay.textContent=fmt(state.betValue);
+    spinBtn.disabled=state.spinning||state.phoenixAutoActive||state.saldo<minBet;
+}
+function stepSize(){ const b=state.betValue; return b<10?1:(b<100?5:50); }
+betMinus.addEventListener('click', ()=>{ if(state.spinning||state.phoenixAutoActive) return; const diff=DIFFS[state.difficulty]; state.betValue=Math.max(diff.betMin,state.betValue-stepSize()); syncBetLimits(); });
+betPlus.addEventListener('click', ()=>{ if(state.spinning||state.phoenixAutoActive) return; state.betValue=state.betValue+stepSize(); syncBetLimits(); });
+document.querySelectorAll('.quick-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+        if(state.spinning||state.phoenixAutoActive) return;
+        const diff=DIFFS[state.difficulty], q=btn.dataset.q;
+        let maxMultiplier=1+(state.upgrades.limite*0.2);
+        let maxAllowed=diff.betMax!==null?Math.min(diff.betMax*maxMultiplier,state.saldo):state.saldo*maxMultiplier;
+        if(maxAllowed>state.saldo) maxAllowed=state.saldo;
+        if(q==='min') state.betValue=diff.betMin;
+        else if(q==='half') state.betValue=Math.max(diff.betMin,Math.floor(state.saldo/2));
+        else if(q==='max') state.betValue=maxAllowed;
+        syncBetLimits();
+    });
+});
+
+function setSpinning(v){
+    state.spinning=v;
+    const diff=DIFFS[state.difficulty];
+    spinBtn.disabled=v||state.phoenixAutoActive||(diff&&state.saldo<diff.betMin);
+    betMinus.disabled=v||state.phoenixAutoActive; betPlus.disabled=v||state.phoenixAutoActive;
+    document.querySelectorAll('.quick-btn').forEach(b=>b.disabled=v||state.phoenixAutoActive);
+    spinBtn.textContent=state.phoenixAutoActive?'🐦‍🔥 FÊNIX GIRANDO...':(v?'🔄 GIRANDO...':'🎰 GIRAR 🔥');
+}
+
+function weightedPick(table, isAutoSpin=false){
+    let adjusted=[...table];
+    if(isAutoSpin){
+        adjusted=adjusted.map(row=>{
+            if(row.key==='phoenix') return {...row, weight: row.weight*0.3};
+            if(row.key==='diamond') return {...row, weight: row.weight*0.6};
+            if(row.key==='vazio') return {...row, weight: row.weight*1.4};
+            return row;
+        });
+    }
+    const total=adjusted.reduce((s,r)=>s+r.weight,0);
+    let r=Math.random()*total;
+    for(const row of adjusted){ if(r<row.weight) return row.key; r-=row.weight; }
+    return adjusted[adjusted.length-1].key;
+}
+function randomNonMatchingTriplet(){
+    const pool=['clover','strawberry','diamond'];
+    const a=pool[Math.floor(Math.random()*pool.length)];
+    let b; do{ b=pool[Math.floor(Math.random()*pool.length)]; } while(b===a);
+    let c; do{ c=pool[Math.floor(Math.random()*pool.length)]; } while(c===b);
+    return [a,b,c];
+}
+function spinReels(outcomeKey, done){
+    const reelEls=[$('reel0'),$('reel1'),$('reel2')];
+    const finalSymbols=outcomeKey==='vazio'?randomNonMatchingTriplet():[outcomeKey,outcomeKey,outcomeKey];
+    const stopTimes=[850,1150,1500];
+    const scrollPool=['clover','strawberry','diamond','phoenix'];
+    reelEls.forEach((el,i)=>{
+        el.classList.add('spinning');
+        const timer=setInterval(()=>{
+            el.querySelector('.sym').textContent=SYMBOLS[scrollPool[Math.floor(Math.random()*scrollPool.length)]].emoji;
+        },70);
+        setTimeout(()=>{
+            clearInterval(timer); el.classList.remove('spinning');
+            el.querySelector('.sym').textContent=SYMBOLS[finalSymbols[i]].emoji;
+            el.classList.add('landed'); setTimeout(()=>el.classList.remove('landed'),380);
+        }, stopTimes[i]);
+    });
+    setTimeout(done, stopTimes[2]+300);
+}
+
+// ===== DESAFIOS =====
+function getChallengeTime(){
+    const map={nivel1:10,nivel2:5,nivel3:5,nivelfenix:3+Math.floor(Math.random()*3)};
+    return map[state.difficulty]||10;
+}
+function startRandomChallenge(){
+    const q=QUESTION_BANK[Math.floor(Math.random()*QUESTION_BANK.length)];
+    challengeActive=true;
+    challengeOverlay.classList.remove('hidden');
+    challengeResult.textContent=''; challengeResult.style.color='var(--dim)';
+    challengeText.textContent=q.question;
+    const timeLimit=getChallengeTime();
+    challengeTimer.textContent=timeLimit;
+    challengeOptions.innerHTML='';
+    const labels=['A','B','C','D'];
+    q.options.forEach((opt,idx)=>{
+        const btn=document.createElement('button');
+        btn.textContent=labels[idx]+'. '+opt;
+        btn.dataset.idx=idx;
+        btn.addEventListener('click', ()=>handleChallengeAnswer(idx,q.answer,btn));
+        challengeOptions.appendChild(btn);
+    });
+    let timer=timeLimit;
+    const countInterval=setInterval(()=>{
+        timer--; challengeTimer.textContent=timer; playCountdownBeep(timer);
+        if(timer<=0){
+            clearInterval(countInterval);
+            document.querySelectorAll('#challengeOptions button').forEach(b=>b.disabled=true);
+            challengeResult.textContent='⏰ Tempo esgotado!'; challengeResult.style.color='var(--flame1)';
+            applyPenalty(0.2); // 20% do saldo
+            setTimeout(()=>{ challengeOverlay.classList.add('hidden'); challengeActive=false; if(state.shopPending){ state.shopPending=false; openShopAutomatically(); } if(state.phoenixAutoActive) return; },1500);
+        }
+    },1000);
+    function handleChallengeAnswer(selected,correct,btn){
+        if(timer<=0) return;
+        clearInterval(countInterval);
+        document.querySelectorAll('#challengeOptions button').forEach(b=>b.disabled=true);
+        if(selected===correct){ btn.classList.add('correct'); challengeResult.textContent='✅ Correto!'; challengeResult.style.color='var(--clover)'; }
+        else { btn.classList.add('wrong'); document.querySelectorAll('#challengeOptions button').forEach((b,i)=>{ if(i===correct) b.classList.add('correct'); }); challengeResult.textContent='❌ Incorreto!'; challengeResult.style.color='var(--flame1)'; applyPenalty(0.2); /* 20% */ }
+        setTimeout(()=>{ challengeOverlay.classList.add('hidden'); challengeActive=false; if(state.shopPending){ state.shopPending=false; openShopAutomatically(); } if(state.phoenixAutoActive) return; },1500);
+    }
+}
+
+// ===== APOSTA FORÇADA =====
+function triggerForcedBet(){
+    if(state.forcedBetPending||state.spinning||state.phoenixAutoActive||challengeActive) return;
+    if(state.saldo<2) return;
+    const betAmount=Math.round(state.saldo*0.5*100)/100;
+    if(betAmount<2) return;
+    state.forcedBetAmount=betAmount;
+    state.forcedBetPending=true;
+    forcedBetAmount.textContent=fmt(betAmount);
+    forcedBetOverlay.classList.remove('hidden');
+    playPhoenixSound();
+}
+function acceptForcedBet(){
+    forcedBetOverlay.classList.add('hidden');
+    state.forcedBetPending=false;
+    state.nextSpinMultiplier=2;
+    const bet=state.forcedBetAmount;
+    state.betValue=bet;
+    betValueDisplay.textContent=fmt(bet);
+    executeSpin(bet,false,true);
+}
+function declineForcedBet(){
+    forcedBetOverlay.classList.add('hidden');
+    state.forcedBetPending=false;
+    const loss=Math.round(state.saldo*0.2*100)/100;
+    state.saldo=Math.max(0,state.saldo-loss);
+    updateBalanceUI();
+    showFloater(-loss);
+    resultMsg.textContent='❌ Você recusou e perdeu '+fmt(loss)+'!';
+    resultMsg.className='result-msg lose';
+    playLoseSound();
+    if(state.saldo<DIFFS[state.difficulty].betMin){ setTimeout(()=>triggerBustScare(),600); }
+    else { checkEndConditions(); scheduleHauntAfterSpins(); checkShopUnlock(); }
+}
+forcedBetAccept.addEventListener('click', acceptForcedBet);
+forcedBetDecline.addEventListener('click', declineForcedBet);
+
+// ===== MODO INVERTIDO =====
+function scheduleInvertedMode(){
+    if(state.invertedActive) return;
+    const minSpins=5, maxSpins=15;
+    state.invertedSpinsUntil=Math.floor(Math.random()*(maxSpins-minSpins+1))+minSpins;
+    // Será verificado no checkHauntAfterSpin
+}
+function activateInvertedMode(){
+    if(state.invertedActive) return;
+    if(state.spinning||state.phoenixAutoActive||challengeActive||state.forcedBetPending||state.shopPending) return;
+    state.invertedActive=true;
+    state.invertedMode=true;
+    appEl.classList.add('inverted-mode');
+    resultMsg.textContent='🌀 MODO INVERTIDO ATIVO! Três iguais = PERDE, diferentes = RECUPERA!';
+    resultMsg.className='result-msg jackpot';
+    playPhoenixSound();
+    // Desativa após alguns segundos (8-14s)
+    const duration=8000+Math.random()*6000;
+    state.invertedTimeout=setTimeout(()=>{
+        deactivateInvertedMode();
+    }, duration);
+}
+function deactivateInvertedMode(){
+    state.invertedActive=false;
+    state.invertedMode=false;
+    appEl.classList.remove('inverted-mode');
+    if(state.invertedTimeout){ clearTimeout(state.invertedTimeout); state.invertedTimeout=null; }
+    resultMsg.textContent='✨ Modo normal restaurado.';
+    resultMsg.className='result-msg';
+    scheduleInvertedMode();
+}
+
+// ===== EXECUÇÃO DO GIRO (CORRIGIDA) =====
+function executeSpin(bet, isAuto, ignoreMaxBet=false){
+    const diff=DIFFS[state.difficulty];
+    if(!bet||bet<=0) return;
+    if(bet<diff.betMin) bet=diff.betMin;
+    if(bet>state.saldo) bet=state.saldo;
+    if(!ignoreMaxBet){
+        let maxMultiplier=1+(state.upgrades.limite*0.2);
+        let maxAllowed=diff.betMax!==null?Math.min(diff.betMax*maxMultiplier,state.saldo):state.saldo*maxMultiplier;
+        if(maxAllowed>state.saldo) maxAllowed=state.saldo;
+        if(bet>maxAllowed) bet=maxAllowed;
+    }
+
+    // Subtrai a aposta
+    state.saldo = Math.max(0, Math.round((state.saldo - bet)*100)/100);
+    updateBalanceUI();
+    setSpinning(true);
+    if(!isAuto){ resultMsg.textContent='🔄 Girando...'; resultMsg.className='result-msg'; startSpinEffects(); }
+    else { resultMsg.textContent='🐦‍🔥 A Fênix girou...'; resultMsg.className='result-msg'; }
+
+    const outcomeKey = weightedPick(diff.table, isAuto);
+    spinReels(outcomeKey, ()=>{
+        let mult = effectiveMult(outcomeKey) * state.nextSpinMultiplier;
+        state.nextSpinMultiplier = 1;
+
+        let totalChange = 0;       // Variação real no saldo (a partir do saldo já descontado)
+        let displayProfit = 0;     // Valor a ser mostrado na mensagem e no floater
+
+        if(state.invertedMode){
+            if(outcomeKey !== 'vazio') {
+                // Três iguais → perde bet * mult (total)
+                displayProfit = -bet * mult;
+                totalChange = -bet * (mult - 1);  // perda adicional (pois a aposta já foi descontada)
+            } else {
+                // Diferentes → recupera a aposta
+                displayProfit = 0;   // ou bet? Vamos mostrar que recuperou
+                totalChange = bet;    // devolve a aposta
+            }
+        } else {
+            // Modo normal
+            if(outcomeKey !== 'vazio') {
+                displayProfit = bet * mult - bet;  // lucro líquido
+                totalChange = bet * mult;          // ganha o total (inclui devolução da aposta)
+            } else {
+                displayProfit = -bet;
+                totalChange = 0;  // não adiciona nada (a aposta já foi descontada)
+            }
+        }
+
+        // Aplica a variação ao saldo
+        state.saldo = Math.round((state.saldo + totalChange)*100)/100;
+        if(state.saldo < 0) state.saldo = 0;
+        updateBalanceUI();
+
+        // Exibe o resultado e atualiza o histórico
+        let win = false;
+        if(state.invertedMode){
+            if(outcomeKey !== 'vazio') {
+                resultMsg.textContent = '🌀 INVERTIDO: Três '+SYMBOLS[outcomeKey].label+'! PERDEU '+fmt(bet*mult)+' (x'+fmtMultNum(mult)+')';
+                resultMsg.className = 'result-msg lose';
+                playLoseSound();
+                showFloater(displayProfit); // mostra o total perdido
+                state.consecutiveWins = Math.max(-2, state.consecutiveWins - 1);
+                win = false;
+            } else {
+                resultMsg.textContent = '🌀 INVERTIDO: Diferentes! RECUPEROU '+fmt(bet);
+                resultMsg.className = 'result-msg win';
+                playWinSound(false);
+                showFloater(0); // não houve lucro
+                state.consecutiveWins++;
+                if(state.consecutiveWins>=3) phoenixBg.classList.add('active');
+                win = true;
+            }
+        } else {
+            // Modo normal
+            if(outcomeKey === 'vazio') {
+                const loseMsg = PHOENIX_LOSE_PHRASES[Math.floor(Math.random() * PHOENIX_LOSE_PHRASES.length)] + fmt(bet);
+                resultMsg.textContent = loseMsg;
+                resultMsg.className = 'result-msg lose';
+                playLoseSound();
+                state.consecutiveWins = Math.max(-2, state.consecutiveWins - 1);
+                phoenixBg.classList.remove('active');
+                showFloater(displayProfit);
+                win = false;
+            } else if(outcomeKey === 'phoenix') {
+                state.score += Math.round(displayProfit) + 100;
+                updateScoreUI();
+                resultMsg.textContent = '🐦‍🔥 A FÊNIX DESPERTOU! +'+fmt(displayProfit)+' (x'+fmtMultNum(mult)+')';
+                resultMsg.className = 'result-msg jackpot';
+                triggerWinFX();
+                appEl.classList.add('shake');
+                setTimeout(()=>appEl.classList.remove('shake'),500);
+                reelsRow.classList.add('jackpot-glow');
+                setTimeout(()=>reelsRow.classList.remove('jackpot-glow'),1200);
+                spawnParticles(reelsRow,20,['🐦‍🔥','🔥','✨']);
+                const f=document.createElement('div');
+                f.className='flash';
+                appEl.appendChild(f);
+                setTimeout(()=>f.remove(),700);
+                playPhoenixSound();
+                state.consecutiveWins++;
+                if(state.consecutiveWins>=3) phoenixBg.classList.add('active');
+                win = true;
+            } else {
+                state.score += Math.round(displayProfit);
+                updateScoreUI();
+                resultMsg.textContent = SYMBOLS[outcomeKey].emoji+' '+SYMBOLS[outcomeKey].label+'! Ganhou '+fmt(displayProfit)+' (x'+fmtMultNum(mult)+')';
+                resultMsg.className = 'result-msg win';
+                triggerWinFX();
+                playWinSound(mult>=10);
+                state.consecutiveWins++;
+                if(state.consecutiveWins>=3) phoenixBg.classList.add('active');
+                win = true;
+            }
+        }
+
+        // Adiciona ao histórico
+        addHistory(outcomeKey, win);
+
+        // Finaliza o giro
+        if(!isAuto){
+            setSpinning(false);
+            if(!state.forcedBetPending && Math.random()<0.05 && state.saldo>5 && !state.shopPending) triggerForcedBet();
+            checkEndConditions();
+            checkHauntAfterSpin();
+            if(state.shopPending){ state.shopPending=false; openShopAutomatically(); }
+        } else {
+            setSpinning(false);
+        }
+    });
+}
+
+function startSpinEffects(){ spawnParticles(reelsRow,10,['🔥','✨']); playSpinSound(); }
+function onSpinClick(){
+    if(state.spinning||state.phoenixAutoActive||challengeActive||state.forcedBetPending) return;
+    const diff=DIFFS[state.difficulty];
+    let bet=state.betValue;
+    if(isNaN(bet)||bet<=0) return;
+    if(bet<diff.betMin){ state.betValue=diff.betMin; bet=diff.betMin; }
+    if(bet>state.saldo){ state.betValue=state.saldo; bet=state.saldo; }
+    let maxMultiplier=1+(state.upgrades.limite*0.2);
+    let maxAllowed=diff.betMax!==null?Math.min(diff.betMax*maxMultiplier,state.saldo):state.saldo*maxMultiplier;
+    if(maxAllowed>state.saldo) maxAllowed=state.saldo;
+    if(bet>maxAllowed){ state.betValue=maxAllowed; bet=maxAllowed; }
+    executeSpin(bet,false);
+}
+spinBtn.addEventListener('click', onSpinClick);
+
+function showFloater(profit){
+    const f=document.createElement('div');
+    f.className='floater '+(profit>=0?'pos':'neg');
+    f.textContent=(profit>=0?'+ 💰 ':'− 💰 ')+fmtNum(Math.abs(profit));
+    floatersEl.appendChild(f); setTimeout(()=>f.remove(),1600);
+}
+function spawnParticles(container,count,emojis){
+    for(let i=0;i<count;i++){
+        const p=document.createElement('span'); p.className='particle';
+        p.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+        p.style.left=(Math.random()*100)+'%'; p.style.animationDelay=(Math.random()*0.35)+'s';
+        p.style.fontSize=(15+Math.random()*18)+'px';
+        container.appendChild(p); setTimeout(()=>p.remove(),2300);
+    }
+}
+function triggerWinFX(){ reelsRow.classList.add('win-glow'); setTimeout(()=>reelsRow.classList.remove('win-glow'),700); spawnParticles(reelsRow,7,['✨','💰']); }
+
+function checkEndConditions(){
+    const diff=DIFFS[state.difficulty];
+    if(state.saldo>=diff.goal && !state.levelGoalReached){ state.levelGoalReached=true; handleLevelComplete(); return; }
+    if(state.saldo<diff.betMin) triggerBustScare();
+}
+function triggerBustScare(){
+    setSpinning(true);
+    const overlay=document.createElement('div'); overlay.id='scareOverlay';
+    overlay.innerHTML='<div class="scare-icon">🐦‍🔥</div><div class="scare-text">'+DEBOCHING_PHRASES[Math.floor(Math.random()*DEBOCHING_PHRASES.length)]+'</div>';
+    appEl.appendChild(overlay); overlay.classList.add('scare-active');
+    playJumpScareSting();
+    setTimeout(()=>{ overlay.remove(); gameoverScore.textContent=state.score; $('gameoverFlavor').textContent=GAMEOVER_FLAVORS[Math.floor(Math.random()*GAMEOVER_FLAVORS.length)]; state.spinning=false; state.phoenixAutoActive=false; showScreen('gameover'); },1500);
+}
+function handleLevelComplete(){
+    const diff=DIFFS[state.difficulty], idx=LEVELS_ORDER.indexOf(state.difficulty), isFinal=idx===LEVELS_ORDER.length-1;
+    setSpinning(true);
+    if(isFinal){ playFinalScareSound(()=>showCredits(true)); return; }
+    const nextKey=LEVELS_ORDER[idx+1], wasLocked=!state.unlockedLevels[nextKey];
+    state.unlockedLevels[nextKey]=true;
+    victoryTitle.textContent='🏆 Nível Concluído!';
+    victoryText.textContent='Você alcançou a meta de '+fmt(diff.goal)+' no '+diff.label+'!';
+    victoryUnlockMsg.classList.toggle('hidden',!wasLocked);
+    victoryUnlockMsg.textContent=wasLocked?'✨ '+DIFFS[nextKey].label+' desbloqueado! ✨':'';
+    victoryScore.textContent=state.score;
+    showScreen('victory');
+    spawnParticles(victoryParticles,32,['🐦‍🔥','🔥','✨']);
+    setSpinning(false);
+}
+
+// ===== HISTÓRICO =====
+function addHistory(symbolKey, win){
+    const symbol = SYMBOLS[symbolKey] ? SYMBOLS[symbolKey].emoji : '❔';
+    state.history.push({ symbol, win });
+    if(state.history.length>6) state.history.shift();
+    updateHistoryUI();
+}
+function updateHistoryUI(){
+    const dots=document.querySelectorAll('.history-dot');
+    for(let i=0;i<6;i++){
+        const dot=dots[i];
+        if(i<state.history.length){
+            const entry=state.history[i];
+            dot.className='history-dot '+(entry.win?'win':'lose');
+            dot.textContent=entry.symbol;
+        } else {
+            dot.className='history-dot';
+            dot.textContent='';
+        }
+    }
+}
+
+// ============================================================
+// EVENTOS ALEATÓRIOS
+// ============================================================
+function getHauntSpinRange(){
+    const ranges={nivel1:{min:5,max:15}, nivel2:{min:4,max:12}, nivel3:{min:3,max:10}, nivelfenix:{min:2,max:8}};
+    return ranges[state.difficulty]||{min:5,max:15};
+}
+function scheduleHauntAfterSpins(){
+    const range=getHauntSpinRange();
+    spinsUntilHaunt=Math.floor(Math.random()*(range.max-range.min+1))+range.min;
+    spinsSinceLastHaunt=0;
+}
+function checkHauntAfterSpin(){
+    if(challengeActive||state.phoenixAutoActive||state.forcedBetPending||state.shopPending||state.spinning) return;
+    if(document.getElementById('screen-game').classList.contains('hidden')) return;
+
+    // Verifica se deve ativar modo invertido
+    if(!state.invertedActive && state.invertedSpinsUntil !== undefined){
+        state.invertedSpinsUntil--;
+        if(state.invertedSpinsUntil <= 0 && !state.invertedActive && !state.spinning && !state.phoenixAutoActive && !challengeActive && !state.forcedBetPending && !state.shopPending){
+            activateInvertedMode();
+            scheduleInvertedMode();
+            return;
+        }
+    }
+
+    spinsSinceLastHaunt++;
+    if(spinsSinceLastHaunt>=spinsUntilHaunt){ triggerPhoenixHaunt(); scheduleHauntAfterSpins(); }
+}
+
+function triggerPhoenixHaunt(){
+    if(challengeActive||state.phoenixAutoActive||state.forcedBetPending||state.shopPending||state.spinning) return;
+    const roll=Math.random();
+    if(roll<0.15) showSimpleScare();
+    else if(roll<0.35) showChallengeWithScare();
+    else if(roll<0.60) startFireEvent();
+    else if(roll<0.80) startCardChoiceEvent();
+    else startPhoenixAutoSpinEvent();
+    if(!state.forcedBetPending&&!state.shopPending&&!challengeActive&&!state.phoenixAutoActive&&Math.random()<0.15&&state.saldo>5) triggerForcedBet();
+}
+function showSimpleScare(){
+    if(challengeActive||state.phoenixAutoActive||state.forcedBetPending) return;
+    const overlay=document.createElement('div'); overlay.id='scareOverlay';
+    overlay.innerHTML='<div class="scare-icon">🐦‍🔥</div><div class="scare-text">'+PROVOCATIVE_PHRASES[Math.floor(Math.random()*PROVOCATIVE_PHRASES.length)]+'</div>';
+    appEl.appendChild(overlay); overlay.classList.add('scare-active');
+    playJumpScareSting(); setTimeout(()=>overlay.remove(),1400);
+}
+function showChallengeWithScare(){
+    if(challengeActive||state.phoenixAutoActive||state.forcedBetPending) return;
+    const overlay=document.createElement('div'); overlay.id='scareOverlay';
+    overlay.innerHTML='<div class="scare-icon">🐦‍🔥</div><div class="scare-text">'+PROVOCATIVE_PHRASES[Math.floor(Math.random()*PROVOCATIVE_PHRASES.length)]+'</div>';
+    appEl.appendChild(overlay); overlay.classList.add('scare-active');
+    playJumpScareSting();
+    setTimeout(()=>{ overlay.remove(); startRandomChallenge(); },1400);
+}
+
+// ===== EVENTO AUTO-SPIN DA FÊNIX =====
+function startPhoenixAutoSpinEvent(){
+    if(challengeActive||state.phoenixAutoActive||state.shopPending||state.forcedBetPending) return;
+    if(state.saldo<2) return;
+    state.phoenixAutoActive=true; challengeActive=true;
+    const spinsCount=Math.floor(Math.random()*5)+1;
+    let currentSpin=0;
+    const phrase=PROVOCATIVE_PHRASES[Math.floor(Math.random()*PROVOCATIVE_PHRASES.length)];
+    autoPhrase.textContent=phrase;
+    autoStatus.textContent='Giro 1 de '+spinsCount+'...';
+    autoBet.textContent='💰 Aposta: escolhendo...';
+    phoenixAutoOverlay.classList.remove('hidden');
+    setSpinning(true);
+    function nextAutoSpin(){
+        if(currentSpin>=spinsCount||state.saldo<=0){
+            phoenixAutoOverlay.classList.add('hidden');
+            state.phoenixAutoActive=false; challengeActive=false;
+            setSpinning(false);
+            if(state.saldo<=0) triggerBustScare();
+            else { checkEndConditions(); scheduleHauntAfterSpins(); if(state.shopPending){ state.shopPending=false; openShopAutomatically(); } }
+            return;
+        }
+        const minBet=2, diff=DIFFS[state.difficulty];
+        let maxMultiplier=1+(state.upgrades.limite*0.2);
+        let maxAllowed=diff.betMax!==null?Math.min(diff.betMax*maxMultiplier,state.saldo):state.saldo*maxMultiplier;
+        if(maxAllowed>state.saldo) maxAllowed=state.saldo;
+        if(maxAllowed<minBet) maxAllowed=minBet;
+        let randomBet=maxAllowed>minBet?Math.round((minBet+Math.random()*(maxAllowed-minBet))*100)/100:minBet;
+        if(randomBet>state.saldo) randomBet=state.saldo;
+        if(randomBet<minBet) randomBet=minBet;
+        state.betValue=randomBet; betValueDisplay.textContent=fmt(randomBet);
+        autoBet.textContent='💰 Aposta: '+fmt(randomBet);
+        currentSpin++;
+        autoStatus.textContent='Giro '+currentSpin+' de '+spinsCount+'...';
+        executeSpin(randomBet,true);
+        setTimeout(nextAutoSpin,1900);
+    }
+    setTimeout(nextAutoSpin,800);
+}
+
+// ===== FOGO =====
+function applyPenalty(pct){
+    const loss=Math.round(state.saldo*pct*100)/100;
+    state.saldo=Math.max(0,state.saldo-loss);
+    updateBalanceUI(); showFloater(-loss);
+    resultMsg.textContent='🐦‍🔥 A Fênix levou '+Math.round(pct*100)+'% do saldo! ('+fmt(loss)+')';
+    resultMsg.className='result-msg lose'; playLoseSound();
+    if(pct>=0.5||state.saldo<DIFFS[state.difficulty].betMin) setTimeout(()=>triggerBustScare(),600);
+}
+function getFireButtonCount(){ const map={nivel1:5,nivel2:6,nivel3:7,nivelfenix:7}; return map[state.difficulty]||5; }
+function startFireEvent(){
+    if(challengeActive||state.shopPending||state.phoenixAutoActive||state.forcedBetPending) return;
+    challengeActive=true;
+    if(fireInterval) clearInterval(fireInterval);
+    document.querySelectorAll('.fire-btn').forEach(el=>el.remove());
+    fireOverlay.classList.remove('hidden');
+    fireTimerSeconds=0;
+    const buttonCount=getFireButtonCount();
+    fireButtonsRemaining=buttonCount;
+    fireStatus.textContent='💧 Botões restantes: '+buttonCount;
+    fireLoss.textContent=fmt(state.saldo);
+    fireTimerEl.textContent='⏱️ 0s';
+    const rect=fireOverlay.getBoundingClientRect();
+    for(let i=0;i<buttonCount;i++){
+        const btn=document.createElement('div');
+        btn.className='fire-btn'; btn.textContent='💧';
+        let left, top, attempts=0;
+        const margin=30;
+        do{
+            left=margin+Math.random()*(rect.width-2*margin-65);
+            top=margin+Math.random()*(rect.height-2*margin-65);
+            attempts++;
+        }while(attempts<50 && left>rect.width/2-200&&left<rect.width/2+200 && top>rect.height/2-150&&top<rect.height/2+150);
+        btn.style.left=left+'px'; btn.style.top=top+'px';
+        btn.style.position='absolute';
+        btn.style.animationDelay=(Math.random()*0.8)+'s';
+        btn.addEventListener('click', function(e){
+            e.stopPropagation();
+            if(this.classList.contains('used')) return;
+            this.classList.add('used');
+            fireButtonsRemaining--;
+            fireStatus.textContent='💧 Botões restantes: '+fireButtonsRemaining;
+            playBeep(800,0,0.1,'square',0.1);
+            if(fireButtonsRemaining===0){
+                clearInterval(fireInterval);
+                fireStatus.textContent='🔥 FOGO APAGADO! ✅';
+                setTimeout(()=>{
+                    fireOverlay.classList.add('hidden');
+                    challengeActive=false;
+                    document.querySelectorAll('.fire-btn').forEach(el=>el.remove());
+                    scheduleHauntAfterSpins();
+                    if(state.shopPending){ state.shopPending=false; openShopAutomatically(); }
+                },800);
+            }
+        });
+        fireOverlay.appendChild(btn);
+    }
+    fireInterval=setInterval(()=>{
+        fireTimerSeconds++;
+        fireTimerEl.textContent='⏱️ '+fireTimerSeconds+'s';
+        const loss=Math.pow(2,fireTimerSeconds);
+        const newSaldo=Math.max(0,state.saldo-loss);
+        const realLoss=state.saldo-newSaldo;
+        state.saldo=newSaldo;
+        updateBalanceUI(); showFloater(-realLoss);
+        fireLoss.textContent=fmt(state.saldo);
+        const lossMsg=document.getElementById('fireLossMsg')||(()=>{const el=document.createElement('div');el.id='fireLossMsg';el.style.fontSize='14px';el.style.color='var(--flame1)';el.style.marginTop='4px';document.querySelector('.fire-panel').appendChild(el);return el;})();
+        lossMsg.textContent='🔥 Perdendo R$ '+loss.toFixed(2)+' agora!';
+        if(state.saldo<=0){ clearInterval(fireInterval); fireStatus.textContent='💀 SALDO ZERADO!'; setTimeout(()=>{ fireOverlay.classList.add('hidden'); document.querySelectorAll('.fire-btn').forEach(el=>el.remove()); challengeActive=false; triggerBustScare(); },600); }
+    },1000);
+}
+
+// ===== CARTAS =====
+const cardEffects=[
+    {type:'bonus',desc:'+10% do saldo',icon:'💰',weight:6,apply:s=>{s.saldo=Math.round(s.saldo*1.1*100)/100;}},
+    {type:'bonus',desc:'+25% do saldo',icon:'💎',weight:4,apply:s=>{s.saldo=Math.round(s.saldo*1.25*100)/100;}},
+    {type:'bonus',desc:'+50% do saldo (raro!)',icon:'🌟',weight:1,apply:s=>{s.saldo=Math.round(s.saldo*1.5*100)/100;}},
+    {type:'bonus',desc:'+R$20,00',icon:'💵',weight:5,apply:s=>{s.saldo+=20;}},
+    {type:'bonus',desc:'Próximo giro x2',icon:'🔥',weight:3,apply:s=>{s.nextSpinMultiplier=2;}},
+    {type:'bonus',desc:'Aposta mínima -50% por 10 giros',icon:'🛡️',weight:2,apply:s=>{s.betMinFactor=0.5; s.betMinFactorRemaining=10;}},
+    {type:'penalty',desc:'-10% do saldo',icon:'💸',weight:6,apply:s=>{s.saldo=Math.round(s.saldo*0.9*100)/100;}},
+    {type:'penalty',desc:'-25% do saldo',icon:'💀',weight:4,apply:s=>{s.saldo=Math.round(s.saldo*0.75*100)/100;}},
+    {type:'penalty',desc:'-50% do saldo (raro!)',icon:'☠️',weight:1,apply:s=>{s.saldo=Math.round(s.saldo*0.5*100)/100;}},
+    {type:'penalty',desc:'-R$20,00',icon:'💳',weight:5,apply:s=>{s.saldo=Math.max(0,s.saldo-20);}},
+    {type:'penalty',desc:'Aposta mínima +100% por 10 giros',icon:'⚠️',weight:2,apply:s=>{s.betMinFactor=2; s.betMinFactorRemaining=10;}},
+    {type:'neutral',desc:'Nada acontece',icon:'😐',weight:2,apply:()=>{}}
+];
+function pickRandomEffect(){ const total=cardEffects.reduce((s,e)=>s+e.weight,0); let r=Math.random()*total; for(const e of cardEffects){ r-=e.weight; if(r<=0) return e; } return cardEffects[0]; }
+function generateCardEffects(){ const effects=[]; const used=new Set(); for(let i=0;i<3;i++){ let e; let att=0; do{ e=pickRandomEffect(); att++; }while(used.has(e.desc)&&att<20); used.add(e.desc); effects.push(e); } return effects; }
+function startCardChoiceEvent(){
+    if(challengeActive||state.shopPending||state.phoenixAutoActive||state.forcedBetPending) return;
+    challengeActive=true;
+    cardOverlay.classList.remove('hidden');
+    cardResult.textContent='';
+    const cards=document.querySelectorAll('.card');
+    const effects=generateCardEffects();
+    cards.forEach(c=>{ c.classList.remove('revealed','bonus','penalty','neutral'); c.style.borderColor=''; c.querySelector('.card-back').style.display='block'; c.querySelector('.card-front').style.display='none'; c.onclick=null; });
+    cards.forEach((card,index)=>{
+        const eff=effects[index];
+        const front=card.querySelector('.card-front');
+        front.innerHTML='';
+        card.onclick=function(e){
+            e.stopPropagation();
+            if(this.classList.contains('revealed')) return;
+            cards.forEach((c,i)=>{
+                if(!c.classList.contains('revealed')){
+                    c.classList.add('revealed');
+                    const f=c.querySelector('.card-front');
+                    f.style.display='flex';
+                    const icon=document.createElement('span'); icon.className='card-icon'; icon.textContent=effects[i].icon;
+                    const label=document.createElement('span'); label.className='card-label'; label.textContent=effects[i].desc;
+                    f.appendChild(icon); f.appendChild(label);
+                    c.classList.add(effects[i].type);
+                    if(i===index){ effects[i].apply(state); updateBalanceUI(); }
+                }
+            });
+            cards.forEach(c=>c.onclick=null);
+            cardResult.textContent='Você escolheu: '+eff.desc;
+            if(state.saldo<=0){ state.saldo=0; updateBalanceUI(); cardResult.textContent+=' 💀 Seu saldo zerou!'; setTimeout(()=>{ cardOverlay.classList.add('hidden'); challengeActive=false; triggerBustScare(); },1200); return; }
+            setTimeout(()=>{
+                cardOverlay.classList.add('hidden'); challengeActive=false;
+                scheduleHauntAfterSpins();
+                if(state.shopPending){ state.shopPending=false; openShopAutomatically(); }
+            },1800);
+        };
+    });
+}
+
+// ============================================================
+// LOJA
+// ============================================================
+function checkShopUnlock(){
+    const milestone=Math.floor(state.saldo/100)*100;
+    if(milestone>state.lastShopMilestone && milestone>=100){
+        state.lastShopMilestone=milestone;
+        if(challengeActive||state.phoenixAutoActive||state.forcedBetPending||state.spinning){
+            state.shopPending=true;
+            resultMsg.textContent='🛒 Loja disponível após o evento atual.';
+            resultMsg.className='result-msg';
+        } else {
+            openShopAutomatically();
+        }
+    }
+}
+function openShopAutomatically(){
+    if(!shopOverlay.classList.contains('hidden')) return;
+    shopBalance.textContent=fmt(state.saldo);
+    renderShop();
+    shopOverlay.classList.remove('hidden');
+    playShopUnlockSound();
+    state.shopPending=false;
+}
+function closeShop(){ shopOverlay.classList.add('hidden'); }
+function renderShop(){
+    shopBalance.textContent=fmt(state.saldo);
+    upgradeList.innerHTML=Object.keys(UPGRADES).map(key=>{
+        const up=UPGRADES[key], level=state.upgrades[key]||0, cost=currentCost(key), afford=state.saldo>=cost;
+        let desc=up.desc;
+        if(key==='limite'){ const mult=1+(level*0.2); desc='Aumenta o limite máximo da aposta em '+Math.round((level+1)*20)+'% (atual: '+Math.round(mult*100)+'%)'; }
+        return `<div class="upg-card"><div class="upg-icon">${up.icon}</div><div class="upg-info"><div class="upg-name">${up.name}<span class="upg-level">Lv.${level}</span></div><div class="upg-desc">${desc}</div></div><button class="buy-btn" data-key="${key}" ${afford?'':'disabled'}>Comprar<span>${fmt(cost)}</span></button></div>`;
+    }).join('');
+}
+function currentCost(key){ const up=UPGRADES[key]; return Math.round(up.baseCost*Math.pow(up.growth,state.upgrades[key]||0)); }
+function renderUpgradeChips(){ upgradeChips.innerHTML=Object.keys(UPGRADES).map(k=>`<span class="chip-u">${UPGRADES[k].icon}${state.upgrades[k]||0}</span>`).join(''); }
+upgradeList.addEventListener('click', e=>{
+    const btn=e.target.closest('.buy-btn'); if(!btn) return;
+    const key=btn.dataset.key, cost=currentCost(key);
+    if(state.saldo<cost) return;
+    state.saldo-=cost; state.upgrades[key]=(state.upgrades[key]||0)+1;
+    updateBalanceUI(); renderShop(); renderUpgradeChips(); paytableBody.innerHTML=buildPaytableHTML(state.difficulty,true);
+});
+shopContinue.addEventListener('click', closeShop);
+
+gameMenuBtn.addEventListener('click', ()=>{ if(state.spinning||state.phoenixAutoActive) return; gameMenuOverlay.classList.remove('hidden'); });
+closeGameMenu.addEventListener('click', ()=>{ gameMenuOverlay.classList.add('hidden'); });
+gameMenuSave.addEventListener('click', ()=>{
+    if(state.spinning||state.phoenixAutoActive) return;
+    const code=generateSaveCode();
+    const saveData={difficulty:state.difficulty, saldo:state.saldo, upgrades:state.upgrades, unlockedLevels:state.unlockedLevels, score:state.score};
+    localStorage.setItem('fenix_save_'+code, JSON.stringify(saveData));
+    alert('✅ Progresso salvo!\n\nSeu código de resgate é:\n\n'+code+'\n\nAnote-o para carregar depois.');
+    gameMenuOverlay.classList.add('hidden');
+});
+function generateSaveCode(){ const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let code=''; for(let i=0;i<8;i++) code+=chars.charAt(Math.floor(Math.random()*chars.length)); return code; }
+gameMenuQuit.addEventListener('click', ()=>{
+    if(state.spinning||state.phoenixAutoActive) return;
+    if(confirm('Deseja voltar ao menu principal? A partida atual será perdida.')){
+        gameMenuOverlay.classList.add('hidden'); showScreen('menu');
+    }
+});
+
+loadSaveBtn.addEventListener('click', ()=>{
+    const code=loadSaveInput.value.trim().toUpperCase();
+    if(!code||code.length!==8){ loadSaveMsg.textContent='❌ Digite um código de 8 caracteres.'; loadSaveMsg.style.color='var(--flame1)'; return; }
+    const raw=localStorage.getItem('fenix_save_'+code);
+    if(!raw){ loadSaveMsg.textContent='❌ Código inválido ou expirado.'; loadSaveMsg.style.color='var(--flame1)'; return; }
+    try{
+        const data=JSON.parse(raw);
+        if(!data.difficulty||!data.saldo||!data.upgrades||!data.unlockedLevels) throw new Error('Corrompido');
+        loadSaveMsg.textContent='✅ Save carregado com sucesso!'; loadSaveMsg.style.color='var(--clover)';
+        state.difficulty=data.difficulty; state.saldo=data.saldo; state.displayedSaldo=data.saldo;
+        state.upgrades=data.upgrades; state.unlockedLevels=data.unlockedLevels; state.score=data.score||0;
+        state.betValue=DIFFS[state.difficulty].betMin; state.levelGoalReached=false;
+        state.lastShopMilestone=Math.floor(state.saldo/100)*100;
+        startGame(null, data);
+        loadSaveInput.value='';
+        setTimeout(()=>{ loadSaveMsg.textContent=''; },3000);
+    } catch(e){ loadSaveMsg.textContent='❌ Erro ao carregar save.'; loadSaveMsg.style.color='var(--flame1)'; }
+});
+
+retryBtn.addEventListener('click', ()=>{
+    const d=DIFFS[state.difficulty];
+    state.saldo=d.start; state.displayedSaldo=d.start;
+    state.betValue=d.betMin;
+    state.score=0;
+    state.upgrades={pena:0, diamante:0, fenix:0, limite:0};
+    state.lastShopMilestone=Math.floor(d.start/100)*100;
+    state.forcedBetPending=false; state.shopPending=false;
+    state.consecutiveWins=0; state.nextSpinMultiplier=1;
+    state.history=[];
+    updateHistoryUI();
+    state.invertedMode=false; state.invertedActive=false;
+    if(state.invertedTimer) clearTimeout(state.invertedTimer);
+    if(state.invertedTimeout) clearTimeout(state.invertedTimeout);
+    appEl.classList.remove('inverted-mode');
+    phoenixBg.classList.remove('active');
+    resetSpinState();
+    pendingDifficulty=state.difficulty;
+    showFenixIntro();
+});
+
+// ============================================================
+// UTILITY
+// ============================================================
+function fmtNum(v){ return v.toLocaleString('pt-BR',{minimumFractionDigits:2, maximumFractionDigits:2}); }
+function fmt(v){ return '💰 '+fmtNum(v); }
+function fmtMultNum(m){ return (m%1===0)?String(m):m.toFixed(1); }
+function pct(w){ return (Math.round(w*10)/10)+'%'; }
+
+// ============================================================
+// INICIALIZAÇÃO
+// ============================================================
+document.querySelectorAll('.screen').forEach(el=>el.classList.add('hidden'));
+document.getElementById('screen-warning').classList.remove('hidden');
+startWarningSequence();
+</script>
+<script src="ember-patch.js"></script>
+</body>
+</html>
