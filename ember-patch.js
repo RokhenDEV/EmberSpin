@@ -6,11 +6,6 @@
     const PORTFOLIO = 'https://rokhendev.github.io/portfolio-rokhen/';
     const GH_PATH = 'M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z';
 
-    const font = document.createElement('link');
-    font.rel = 'stylesheet';
-    font.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@500;600;700;800&display=swap';
-    document.head.appendChild(font);
-
     const CSS = `
 :root{
   --bg:#06030a; --bg2:#0b0610; --panel:#170c1c; --panel2:#10081a; --line:rgba(255,255,255,.09);
@@ -87,7 +82,7 @@ html,body{overscroll-behavior:none;}
 .app .chip-u{border-radius:8px;background:rgba(255,255,255,.05);}
 
 .app .balance-panel,.app .bet-panel,.app .diff-card,.app .upg-card,.app .volume-control{
-  background:var(--glass);border:1px solid var(--line);border-radius:20px;backdrop-filter:blur(8px);
+  background:var(--glass);border:1px solid var(--line);border-radius:20px;
 }
 .app .balance-panel{padding:12px;box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 14px 34px -22px rgba(255,200,60,.5);}
 .app .balance-label{letter-spacing:3px;}
@@ -132,13 +127,13 @@ html,body{overscroll-behavior:none;}
 .app .upg-card{padding:10px 12px;}
 .app .paytable summary{padding:6px 0;}
 
-.app .overlay{background:rgba(5,2,8,.72);backdrop-filter:blur(10px);}
+.app .overlay{background:rgba(5,2,8,.88);}
 .app .overlay .shop-panel,.app .overlay .menu-panel{
   background:linear-gradient(180deg,#1d0f24,#12081a);border:1px solid var(--line);border-bottom:none;
   border-radius:28px 28px 0 0;box-shadow:0 -24px 60px -24px rgba(255,77,87,.45);
 }
 .app .challenge-panel,.app .card-panel,.app .forced-bet-panel,.app .phoenix-auto-panel,.app .fire-panel{
-  border-radius:28px;backdrop-filter:blur(14px);
+  border-radius:28px;
 }
 .app .challenge-options button{border-radius:14px;background:rgba(255,255,255,.04);}
 .app .card{border-radius:16px;}
@@ -167,7 +162,8 @@ html,body{overscroll-behavior:none;}
 .app .ld-info{font-size:11px;line-height:1.5;color:var(--dim);max-width:300px;opacity:.75;}
 .app .ld-bar-wrap{width:min(280px,80%);margin-top:10px;}
 .app .ld-bar{height:6px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden;}
-.app .ld-fill{height:100%;width:0;background:linear-gradient(90deg,var(--flame1),var(--flame2),var(--gold));box-shadow:0 0 14px rgba(255,146,72,.7);transition:width .1s linear;}
+.app .ld-fill{height:100%;width:100%;transform:scaleX(0);transform-origin:left;background:linear-gradient(90deg,var(--flame1),var(--flame2),var(--gold));box-shadow:0 0 14px rgba(255,146,72,.7);}
+.app .ld-fill.run{transform:scaleX(1);transition:transform 10s linear;}
 .app .ld-label{display:flex;justify-content:space-between;margin-top:8px;font-size:12px;color:var(--dim);}
 .app .ld-fun{margin-top:16px;font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--gold);text-shadow:0 0 22px rgba(255,200,60,.5);}
 .app.pixel-on .ld-main{font-size:21px;}
@@ -209,17 +205,16 @@ html,body{overscroll-behavior:none;}
         const pct = document.getElementById('ldPct');
         screen.classList.add('warn-in');
         const total = 10000, t0 = performance.now();
-        const iv = setInterval(function () {
-            const p = Math.min(1, (performance.now() - t0) / total);
-            fill.style.width = (p * 100) + '%';
-            pct.textContent = Math.floor(p * 100) + '%';
-            if (p >= 1) { clearInterval(iv); showScreen('opening'); runBootSequence(); }
-        }, 100);
+        let last = -1;
+        requestAnimationFrame(function () { fill.classList.add('run'); });
+        (function tick(now) {
+            const p = Math.min(1, (now - t0) / total), v = Math.floor(p * 100);
+            if (v !== last) { last = v; pct.textContent = v + '%'; }
+            if (p >= 1) { showScreen('opening'); runBootSequence(); return; }
+            requestAnimationFrame(tick);
+        })(t0);
     }
     function startIntro() {
-        const last = setTimeout(function () {}, 0);
-        for (let i = 0; i <= last; i++) { clearInterval(i); clearTimeout(i); }
-
         buildLoading();
         const intro = document.createElement('div');
         intro.className = 'dev-intro';
