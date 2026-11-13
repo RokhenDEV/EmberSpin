@@ -1,9 +1,3 @@
-/* ============================================================
-   EMBER SPIN – patch RokhenDEV
-   Uso: coloque este arquivo e o rokhendev-logo.png na mesma pasta
-   do seu HTML e adicione, logo depois do <script> principal:
-       <script src="ember-patch.js"></script>
-   ============================================================ */
 (function () {
     'use strict';
 
@@ -12,13 +6,11 @@
     const PORTFOLIO = 'https://rokhendev.github.io/portfolio-rokhen/';
     const GH_PATH = 'M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z';
 
-    /* ---------- FONTES ---------- */
     const font = document.createElement('link');
     font.rel = 'stylesheet';
     font.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@500;600;700;800&display=swap';
     document.head.appendChild(font);
 
-    /* ---------- DESIGN MODERNO ---------- */
     const CSS = `
 :root{
   --bg:#06030a; --bg2:#0b0610; --panel:#170c1c; --panel2:#10081a; --line:rgba(255,255,255,.09);
@@ -41,7 +33,6 @@ body{
   box-shadow:0 40px 90px -30px #000,0 0 90px -34px rgba(255,77,87,.45);
 }
 .app::after{background:radial-gradient(ellipse at center,transparent 68%,rgba(0,0,0,.4) 100%);}
-/* adaptação: celular (vertical) e desktop (tela cheia) */
 html,body{overscroll-behavior:none;}
 .app{
   width:100vw!important;height:100vh!important;height:100dvh!important;border:0;border-radius:0!important;
@@ -72,13 +63,11 @@ html,body{overscroll-behavior:none;}
 @media(orientation:landscape) and (pointer:coarse) and (max-height:520px){.rotate-hint{display:flex;}}
 .app .screen{scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.18) transparent;}
 
-/* tipografia */
 .app:not(.pixel-on) .menu-wrap h2,.app:not(.pixel-on) .intro h2,.app:not(.pixel-on) .tutorial-wrap h2,.app:not(.pixel-on) .end-card h2{font-weight:700;letter-spacing:.5px;}
 .app .opening-title{text-shadow:0 0 26px rgba(255,77,87,.85),0 0 70px rgba(255,146,72,.45);}
 .app:not(.pixel-on) .opening-title{font-size:36px;font-weight:800;letter-spacing:7px;color:#fff;}
 .app:not(.pixel-on) .opening-sub{font-size:12px;line-height:1.5;max-width:300px;margin:0 auto 20px;}
 
-/* botões */
 .app .primary-btn,.app .play-btn,.app .shop-continue,.app .buy-btn{
   border-radius:999px;font-family:var(--font-display);font-weight:600;letter-spacing:.3px;
   background:linear-gradient(135deg,#ff6a4d,#ffb347);color:#1b0a06;
@@ -93,12 +82,10 @@ html,body{overscroll-behavior:none;}
 .app .buy-btn:disabled,.app .play-btn:disabled{background:rgba(255,255,255,.06);color:var(--dim);box-shadow:none;transform:none;filter:none;}
 .app .menu-buttons{max-width:260px;gap:10px;}
 
-/* topo da partida */
 .app .badge{border-radius:999px;background:rgba(255,255,255,.04);font-family:var(--font-display);font-weight:600;}
 .app .icon-btn{border-radius:12px;background:rgba(255,255,255,.04);}
 .app .chip-u{border-radius:8px;background:rgba(255,255,255,.05);}
 
-/* painéis */
 .app .balance-panel,.app .bet-panel,.app .diff-card,.app .upg-card,.app .volume-control{
   background:var(--glass);border:1px solid var(--line);border-radius:20px;backdrop-filter:blur(8px);
 }
@@ -112,12 +99,10 @@ html,body{overscroll-behavior:none;}
 .app .quick-btn{border-radius:999px;padding:5px 13px;background:rgba(255,255,255,.04);}
 .app .bet-value{font-weight:700;}
 
-/* histórico */
 .app .history-dot{width:34px;height:34px;background:rgba(255,255,255,.04);border:1px solid var(--line);}
 .app .history-dot.win{background:rgba(74,222,128,.18);border-color:var(--clover);box-shadow:0 0 14px -4px var(--clover);}
 .app .history-dot.lose{background:rgba(255,77,87,.16);border-color:var(--flame1);box-shadow:0 0 14px -4px var(--flame1);}
 
-/* rolos */
 .app .reels-row{gap:16px;border-radius:26px;background:radial-gradient(ellipse at center,rgba(255,77,87,.14),transparent 70%);}
 .app .reel{
   width:104px;height:128px;font-size:56px;border-radius:22px;
@@ -129,7 +114,6 @@ html,body{overscroll-behavior:none;}
 @media(max-width:400px){.app .reel{width:66px;height:86px;font-size:34px;}}
 .app .result-msg{font-size:13px;font-weight:500;line-height:1.4;}
 
-/* botão girar */
 .app .spin-btn{
   max-width:none;padding:15px 20px;border-radius:20px;font-weight:700;
   font-family:var(--font-display);color:#2a0905;
@@ -142,14 +126,12 @@ html,body{overscroll-behavior:none;}
 .app .spin-btn:disabled{box-shadow:none;filter:grayscale(.5);}
 .app:not(.pixel-on) .spin-btn{font-size:16px;letter-spacing:2px;}
 
-/* seleção de nível */
 .app .diff-grid{gap:12px;}
 .app .diff-card{padding:14px;transition:transform .18s,box-shadow .18s,border-color .18s;}
 .app .diff-card:hover:not(.locked){box-shadow:0 18px 44px -20px rgba(255,146,72,.7);}
 .app .upg-card{padding:10px 12px;}
 .app .paytable summary{padding:6px 0;}
 
-/* overlays e eventos */
 .app .overlay{background:rgba(5,2,8,.72);backdrop-filter:blur(10px);}
 .app .overlay .shop-panel,.app .overlay .menu-panel{
   background:linear-gradient(180deg,#1d0f24,#12081a);border:1px solid var(--line);border-bottom:none;
@@ -162,7 +144,6 @@ html,body{overscroll-behavior:none;}
 .app .card{border-radius:16px;}
 .app .save-load-section input{border-radius:12px;background:rgba(255,255,255,.04);}
 
-/* abertura: logo acende e apaga (4s) */
 .dev-intro{position:absolute;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;background:#06030a;}
 .dev-intro-inner{display:flex;flex-direction:column;align-items:center;gap:22px;text-align:center;opacity:0;animation:devFlash 4s ease-in-out forwards;}
 .dev-intro-inner img{width:150px;max-width:50vw;height:auto;image-rendering:auto;filter:drop-shadow(0 0 30px rgba(255,255,255,.22));}
@@ -178,7 +159,6 @@ html,body{overscroll-behavior:none;}
 }
 @keyframes devFade{0%{opacity:0;}28%,72%{opacity:1;}100%{opacity:0;}}
 
-/* tela de aviso / carregamento */
 .app #screen-warning .warning-wrap{gap:16px;padding:8px 0;}
 .app #screen-warning .warning-title{font-size:22px;margin:0 0 4px;}
 .app .ld-main{font-size:15px;line-height:1.6;color:var(--text);max-width:320px;}
@@ -211,7 +191,6 @@ html,body{overscroll-behavior:none;}
     style.textContent = CSS;
     document.head.appendChild(style);
 
-    /* ---------- BLOCOS DO DESENVOLVEDOR ---------- */
     function buildLoading() {
         const wrap = document.querySelector('#screen-warning .warning-wrap');
         if (!wrap) return;
@@ -238,7 +217,6 @@ html,body{overscroll-behavior:none;}
         }, 100);
     }
     function startIntro() {
-        // O script do jogo já iniciou a contagem antiga da tela de aviso: cancela para refazer com o logo primeiro.
         const last = setTimeout(function () {}, 0);
         for (let i = 0; i <= last; i++) { clearInterval(i); clearTimeout(i); }
 
@@ -261,10 +239,8 @@ html,body{overscroll-behavior:none;}
         return d;
     }
 
-    // Abertura: logo (4s) e depois a tela de carregamento
     startIntro();
 
-    // Botões do GitHub e do portfólio: abertura, menu e créditos
     const openContent = document.getElementById('openingContent');
     if (openContent) openContent.appendChild(devLinks());
     const menuWrap = document.querySelector('#screen-menu .menu-wrap');
@@ -272,15 +248,12 @@ html,body{overscroll-behavior:none;}
     const creditsBackBtn = document.getElementById('creditsBack');
     if (creditsBackBtn) creditsBackBtn.before(devLinks());
 
-    // Créditos
     const credits = document.querySelector('#screen-credits .credits-text');
     if (credits) credits.innerHTML = 'Desenvolvido por <b>RokhenDEV</b>';
 
-    /* ---------- DESKTOP (tela cheia) E CELULAR (vertical) ---------- */
     const vp = document.querySelector('meta[name="viewport"]');
     if (vp) vp.content = 'width=device-width, initial-scale=1.0, viewport-fit=cover';
 
-    // Aviso quando o celular está deitado (só aparece em celular na horizontal)
     const hint = document.createElement('div');
     hint.className = 'rotate-hint';
     hint.innerHTML = '<div class="ph">📱</div><p>Gire o celular para a vertical</p><small>O Ember Spin foi feito para jogar em pé.</small>';
@@ -300,11 +273,9 @@ html,body{overscroll-behavior:none;}
     function lockPortrait() {
         if (screen.orientation && screen.orientation.lock) screen.orientation.lock('portrait').catch(function () {});
     }
-    // Navegadores só liberam tela cheia após um clique: acontece ao tocar em "Entrar"
     enterBtn.addEventListener('click', function () {
         enterFs().then(function () { if (isPhone) lockPortrait(); });
     });
-    // Botão de tela cheia (só no desktop)
     const fsBtn = document.createElement('button');
     fsBtn.className = 'fs-btn';
     fsBtn.type = 'button';
@@ -314,7 +285,6 @@ html,body{overscroll-behavior:none;}
     fsBtn.addEventListener('click', function () { if (isFs()) exitFs(); else enterFs(); });
     appEl.appendChild(fsBtn);
 
-    /* ---------- CORREÇÃO: saldo abaixo da aposta mínima após comprar na loja ---------- */
     upgradeList.addEventListener('click', function (e) {
         if (!e.target.closest('.buy-btn')) return;
         if (!state.difficulty || document.getElementById('scareOverlay')) return;
