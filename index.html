@@ -293,7 +293,7 @@
         .reel.spinning .sym{animation:reel-blur 0.09s linear infinite;}
         @keyframes reel-blur{0%{transform:translateY(-10px); opacity:0.5;} 50%{transform:translateY(10px); opacity:1;} 100%{transform:translateY(-10px); opacity:0.5;}}
         .reel.landed{animation:land-pulse 0.4s ease-out;}
-        @keyframes land-pulse{0%{transform:scale(1.2);} 100%{transform:scale(1);}}
+        @keyframes land-pulse{0%{transform:translateY(-18px) scale(1.18);} 45%{transform:translateY(6px) scale(.94);} 70%{transform:translateY(-3px) scale(1.03);} 100%{transform:none;}}
 
         .result-msg{
             text-align:center; font-size:12px; color:var(--dim); min-height:18px; margin-bottom:6px; letter-spacing:0.3px;
@@ -738,6 +738,38 @@
             .card{ width:70px; height:96px; font-size:30px; }
             .primary-btn, .spin-btn{ min-width:80px; padding:6px 10px; }
         }
+
+        .screen:not(.hidden){animation:screen-in .35s ease-out;}
+        @keyframes screen-in{from{opacity:0; transform:translateY(12px);} to{opacity:1; transform:none;}}
+        .challenge-panel,.card-panel,.forced-bet-panel,.phoenix-auto-panel,.fire-panel{animation:panel-pop .4s cubic-bezier(.2,1.4,.4,1);}
+        @keyframes panel-pop{from{opacity:0; transform:scale(.8);} to{opacity:1; transform:none;}}
+        .overlay:not(.hidden) .shop-panel,.overlay:not(.hidden) .menu-panel{animation:sheet-up .3s ease-out;}
+        @keyframes sheet-up{from{transform:translateY(40px); opacity:0;} to{transform:none; opacity:1;}}
+        .spin-btn:not(:disabled){animation:spin-idle 2.2s ease-in-out infinite;}
+        .spin-btn:hover:not(:disabled){animation:none;}
+        @keyframes spin-idle{0%,100%{transform:scale(1);} 50%{transform:scale(1.03);}}
+        .reel.win-reel{animation:reel-win .8s ease-out both; border-color:var(--gold);}
+        @keyframes reel-win{0%{transform:scale(1); box-shadow:0 0 0 rgba(255,210,63,0);} 35%{transform:scale(1.14) rotate(-3deg); box-shadow:0 0 34px rgba(255,210,63,.9);} 65%{transform:scale(1.08) rotate(3deg);} 100%{transform:scale(1); box-shadow:0 0 18px rgba(255,210,63,.4);}}
+        .reel.lose-reel{animation:reel-lose .45s ease-in-out both;}
+        @keyframes reel-lose{0%,100%{transform:translateX(0); opacity:1;} 20%{transform:translateX(-5px); opacity:.6;} 40%{transform:translateX(5px);} 60%{transform:translateX(-3px); opacity:.7;} 80%{transform:translateX(3px);}}
+        .history-dot.pop{animation:dot-pop .45s cubic-bezier(.2,1.6,.4,1);}
+        @keyframes dot-pop{from{transform:scale(0) rotate(-120deg);} to{transform:none;}}
+        .balance-value.bal-up{animation:bal-up .6s ease-out;}
+        .balance-value.bal-down{animation:bal-down .6s ease-out;}
+        @keyframes bal-up{0%{transform:scale(1); color:var(--gold);} 30%{transform:scale(1.15); color:var(--clover);} 100%{transform:scale(1); color:var(--gold);}}
+        @keyframes bal-down{0%{transform:scale(1); color:var(--gold);} 30%{transform:scale(.92); color:var(--flame1);} 100%{transform:scale(1); color:var(--gold);}}
+        .auto-btn{flex:0 0 auto; padding:15px 14px; border-radius:20px; border:1px solid var(--flame2); background:rgba(255,255,255,0.05); color:var(--flame2);
+            font-family:var(--font-display); font-weight:700; font-size:12px; cursor:pointer; touch-action:manipulation;}
+        .auto-btn:hover:not(:disabled){border-color:var(--gold); color:var(--gold);}
+        .auto-btn:disabled{opacity:.6; cursor:not-allowed;}
+        .auto-btn.on{background:linear-gradient(135deg,#4ade80,#16a34a); border-color:#4ade80; color:#052e16; animation:auto-pulse 1s ease-in-out infinite;}
+        @keyframes auto-pulse{0%,100%{transform:scale(1);} 50%{transform:scale(1.06);}}
+        .auto-btn.jam{border-color:var(--flame1); color:var(--flame1); animation:jam-btn .3s steps(2) infinite;}
+        @keyframes jam-btn{0%{transform:translate(-2px,1px) rotate(-3deg);} 100%{transform:translate(2px,-1px) rotate(3deg);}}
+        .reels-row.jammed{filter:grayscale(.85); animation:jam-row .25s steps(2) infinite;}
+        @keyframes jam-row{0%{transform:translateX(-4px) skewX(-2deg);} 100%{transform:translateX(4px) skewX(2deg);}}
+        .auto-hint{text-align:center; font-size:10px; color:var(--dim); margin-top:4px; flex-shrink:0;}
+        @media(prefers-reduced-motion:reduce){.screen:not(.hidden),.spin-btn,.auto-btn,.reel,.history-dot,.balance-value,.reels-row{animation:none !important;}}
     </style>
 </head>
 <body>
@@ -915,8 +947,10 @@
             </div>
             <div class="spin-area">
                 <button class="spin-btn" id="spinBtn">🎰 GIRAR 🔥</button>
+                <button class="auto-btn" id="autoBtn" type="button">🔁 AUTO</button>
             </div>
         </div>
+        <div class="auto-hint" id="autoHint"></div>
         <details class="paytable">
             <summary>📊 Tabela de pagamentos (com melhorias)</summary>
             <div id="paytableBody"></div>
@@ -1155,7 +1189,7 @@ let state = {
     difficulty:null, saldo:0, displayedSaldo:0, betValue:2, score:0, levelGoalReached:false,
     upgrades:{pena:0, diamante:0, fenix:0, limite:0},
     unlockedLevels:{nivel1:true, nivel2:false, nivel3:false, nivelfenix:false},
-    spinning:false,
+    spinning:false, autoOn:false, autoTimer:null,
     musicVolume:75, pixelOn:true,
     lastShopMilestone:0,
     nextSpinMultiplier:1,
@@ -1315,6 +1349,7 @@ function showScreen(name){
     ['warning','opening','menu','options','credits','exit','tutorial','fenix-intro','difficulty','game','gameover','victory'].forEach(s=>{
         const el=$('screen-'+s); if(el) el.classList.toggle('hidden', s!==name);
     });
+    if(name!=='game') stopAuto();
     shopOverlay.classList.add('hidden'); gameMenuOverlay.classList.add('hidden');
     if(name==='menu'||name==='difficulty') resetSpinState();
     if(name==='difficulty') renderDifficultyScreen();
@@ -1443,13 +1478,13 @@ function startGame(key, restoreData){
     resultMsg.textContent='💡 Escolha o valor e gire!';
     resultMsg.className='result-msg';
     paytableBody.innerHTML=buildPaytableHTML(state.difficulty,true);
-    renderUpgradeChips(); resetReelsVisual(); syncBetLimits();
+    renderUpgradeChips(); resetReelsVisual(); syncBetLimits(); updateAutoUI();
     scheduleHauntAfterSpins();
     scheduleInvertedMode();
 }
 function updateScoreUI(){ scoreBadge.textContent='🏆 '+state.score; }
 function resetReelsVisual(){ reelEls.forEach((el,i)=>{ reelSyms[i].textContent='❔'; el.classList.remove('spinning','landed'); }); }
-function updateBalanceUI(){ state.displayedSaldo=state.saldo; balanceValueEl.textContent=fmt(state.saldo); syncBetLimits(); checkShopUnlock(); }
+function updateBalanceUI(){ const from=state.displayedSaldo; state.displayedSaldo=state.saldo; animateBalance(from,state.saldo); syncBetLimits(); checkShopUnlock(); }
 function syncBetLimits(){
     const diff=DIFFS[state.difficulty]; if(!diff) return;
     let minBet=diff.betMin;
@@ -1476,6 +1511,74 @@ quickBtns.forEach(btn=>{
     });
 });
 
+const AUTO_FEE={nivel1:0.05,nivel2:0.10,nivel3:0.15,nivelfenix:0.20};
+const AUTO_JAM_CHANCE=0.08;
+const autoBtn=$('autoBtn'), autoHint=$('autoHint');
+function autoFee(bet){ return Math.round(bet*AUTO_FEE[state.difficulty]*100)/100; }
+function updateAutoUI(){
+    autoBtn.textContent=state.autoOn?'⏹ PARAR':'🔁 AUTO';
+    autoBtn.classList.toggle('on',state.autoOn);
+    const f=AUTO_FEE[state.difficulty];
+    autoHint.textContent=f?'🔁 Auto: taxa de '+Math.round(f*100)+'% da aposta por giro · pode travar':'';
+}
+function stopAuto(){
+    if(state.autoTimer){ clearTimeout(state.autoTimer); state.autoTimer=null; }
+    if(!state.autoOn) return;
+    state.autoOn=false; updateAutoUI();
+}
+function startAuto(){
+    if(state.autoOn||autoBtn.disabled||state.spinning||state.phoenixAutoActive||challengeActive||state.forcedBetPending) return;
+    const bet=Math.min(state.betValue,getMaxBet()), fee=autoFee(bet);
+    if(state.saldo<bet+fee){ resultMsg.textContent='❌ Saldo insuficiente para ligar o auto (aposta + taxa de '+fmt(fee)+')'; resultMsg.className='result-msg lose'; return; }
+    resultMsg.textContent='🔁 Giro automático ligado! Taxa de '+fmt(fee)+' por giro';
+    resultMsg.className='result-msg lose';
+    state.autoOn=true; updateAutoUI();
+    state.autoTimer=setTimeout(autoTick,700);
+}
+function autoJam(){
+    stopAuto();
+    autoBtn.disabled=true; autoBtn.textContent='⚙️ TRAVOU'; autoBtn.classList.add('jam'); reelsRow.classList.add('jammed');
+    resultMsg.textContent='⚙️💥 O giro automático TRAVOU! Aguarde...'; resultMsg.className='result-msg lose';
+    spawnParticles(reelsRow,10,['⚙️','💥','⚡']); playLoseSound();
+    setTimeout(()=>{ autoBtn.disabled=false; autoBtn.classList.remove('jam'); reelsRow.classList.remove('jammed'); updateAutoUI(); },3000);
+}
+function autoTick(){
+    state.autoTimer=null;
+    if(!state.autoOn) return;
+    if($('screen-game').classList.contains('hidden')){ stopAuto(); return; }
+    const busy=state.spinning||state.phoenixAutoActive||challengeActive||state.forcedBetPending||state.shopPending||
+        !shopOverlay.classList.contains('hidden')||!gameMenuOverlay.classList.contains('hidden')||$('scareOverlay');
+    if(busy){ state.autoTimer=setTimeout(autoTick,500); return; }
+    const diff=DIFFS[state.difficulty];
+    let bet=Math.min(state.betValue,getMaxBet());
+    if(bet<diff.betMin) bet=diff.betMin;
+    const fee=autoFee(bet);
+    if(state.saldo<bet+fee){ stopAuto(); resultMsg.textContent='🔁 Auto parado: saldo insuficiente para aposta + taxa.'; resultMsg.className='result-msg'; return; }
+    if(Math.random()<AUTO_JAM_CHANCE){ autoJam(); return; }
+    state.saldo=Math.round((state.saldo-fee)*100)/100;
+    updateBalanceUI(); showFloater(-fee);
+    executeSpin(bet,false);
+    state.autoTimer=setTimeout(autoTick,900);
+}
+autoBtn.addEventListener('click',()=>{ if(state.autoOn) stopAuto(); else startAuto(); });
+function flashReels(win){
+    const c=win?'win-reel':'lose-reel';
+    reelEls.forEach((el,i)=>{ el.style.animationDelay=(i*90)+'ms'; el.classList.add(c); });
+    setTimeout(()=>reelEls.forEach(el=>{ el.classList.remove(c); el.style.animationDelay=''; }),900);
+}
+let balRaf=0;
+function animateBalance(from,to){
+    cancelAnimationFrame(balRaf);
+    if(from===to){ balanceValueEl.textContent=fmt(to); return; }
+    balanceValueEl.classList.remove('bal-up','bal-down'); void balanceValueEl.offsetWidth;
+    balanceValueEl.classList.add(to>from?'bal-up':'bal-down');
+    const t0=performance.now();
+    (function step(now){
+        const p=Math.min(1,(now-t0)/450), e=1-Math.pow(1-p,3);
+        balanceValueEl.textContent=fmt(from+(to-from)*e);
+        if(p<1) balRaf=requestAnimationFrame(step); else balanceValueEl.textContent=fmt(to);
+    })(t0);
+}
 function setSpinning(v){
     state.spinning=v;
     const diff=DIFFS[state.difficulty];
@@ -1739,6 +1842,7 @@ function executeSpin(bet, isAuto, ignoreMaxBet=false){
         }
 
         addHistory(outcomeKey, win);
+        flashReels(win);
 
         if(!isAuto){
             setSpinning(false);
@@ -1754,6 +1858,7 @@ function executeSpin(bet, isAuto, ignoreMaxBet=false){
 
 function startSpinEffects(){ spawnParticles(reelsRow,10,['🔥','✨']); playSpinSound(); }
 function onSpinClick(){
+    if(state.autoOn){ stopAuto(); return; }
     if(state.spinning||state.phoenixAutoActive||challengeActive||state.forcedBetPending) return;
     const diff=DIFFS[state.difficulty];
     let bet=state.betValue;
@@ -1824,7 +1929,7 @@ function updateHistoryUI(){
         if(i<state.history.length){
             const entry=state.history[i];
             dot.className='history-dot '+(entry.win?'win':'lose');
-            dot.textContent=entry.symbol;
+            dot.textContent=entry.symbol; if(i===state.history.length-1) dot.classList.add('pop');
         } else {
             dot.className='history-dot';
             dot.textContent='';
