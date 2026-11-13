@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="assets/cover-limpa.png" alt="Ember Spin – uma experiência de sorte, estratégia e desafios com a força da Fênix" width="100%">
+  <img src="assets/cover.png" alt="Ember Spin – uma experiência de sorte, estratégia e desafios com a força da Fênix" width="100%">
   <h1>🔥 Ember Spin</h1>
   <p><strong>🎰 Uma experiência de sorte, estratégia e desafios com a força da Fênix. 🐦‍🔥</strong></p>
   <p>
