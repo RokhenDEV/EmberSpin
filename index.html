@@ -1,3 +1,6 @@
+Aqui está o código completo sem comentários:
+
+```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -9,7 +12,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Space+Mono:wght@400;700&family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
     <style>
-        /* ===== RESET E BASE ===== */
         :root{
             --bg:#050002; --bg2:#0c0308; --panel:#150810; --panel2:#1d0b14; --line:#3a1420;
             --flame1:#ff2e2e; --flame2:#ff8a3d; --gold:#ffd23f; --diamond:#7dd3fc; --clover:#4ade80; --straw:#fb7185;
@@ -84,7 +86,6 @@
         .screen.hidden{display:none;}
         @media (max-height:700px){ .screen{ padding:12px 16px; } }
 
-        /* ===== MODO INVERTIDO ===== */
         .app.inverted-mode {
             filter: invert(1) hue-rotate(180deg);
             transition: filter 0.3s ease;
@@ -106,7 +107,6 @@
             100% { opacity: 1; transform: scale(1.05); }
         }
 
-        /* ===== HISTÓRICO ===== */
         .history-panel {
             display: flex;
             gap: 8px;
@@ -129,7 +129,6 @@
         .history-dot.win { background: var(--clover); border-color: var(--clover); }
         .history-dot.lose { background: var(--flame1); border-color: var(--flame1); }
 
-        /* ===== AVISO INICIAL ===== */
         .warning-wrap{
             text-align:center; padding:20px 0; flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center;
         }
@@ -176,7 +175,6 @@
             border-top:1px solid var(--line); padding-top:8px;
         }
 
-        /* ===== MENU, BOOT, ETC ===== */
         .menu-wrap{text-align:center; padding:20px 0; flex:1; display:flex; flex-direction:column; justify-content:center;}
         .boot-lines{min-height:80px; display:flex; flex-direction:column; justify-content:center; padding:0 14px;}
         .boot-line{font-family:var(--font-body); color:var(--clover); font-size:13px; text-align:left; margin:2px auto; max-width:280px;
@@ -247,7 +245,6 @@
         .pay-chance{color:var(--dim); width:30px; text-align:right;}
         .pay-mult{width:28px; text-align:right; color:var(--gold); font-weight:700;}
 
-        /* ===== GAME TOP ===== */
         .game-top{
             display:flex; align-items:center; gap:6px; margin-bottom:6px; flex-wrap:wrap;
             flex-shrink:0;
@@ -269,7 +266,6 @@
         .icon-btn:disabled{opacity:0.4; cursor:not-allowed;}
         #gameMenuBtn { margin-left: auto; }
 
-        /* ===== BALANCE ===== */
         .balance-panel{
             text-align:center; padding:8px 10px; border:1px solid var(--line); border-radius:8px;
             background:rgba(0,0,0,0.25); margin-bottom:6px; position:relative; flex-shrink:0;
@@ -283,7 +279,6 @@
         .floater.pos{color:var(--gold);} .floater.neg{color:var(--flame1);}
         @keyframes rise-fade{0%{opacity:0; transform:translate(-50%,0) scale(0.85);} 15%{opacity:1;} 100%{opacity:0; transform:translate(-50%,-40px) scale(1.05);}}
 
-        /* ===== REELS ===== */
         .reels-row{
             display:flex; justify-content:center; align-items:center; gap:14px;
             padding:10px 0 10px; position:relative; border-radius:12px;
@@ -309,7 +304,6 @@
         .reel.landed{animation:land-pulse 0.4s ease-out;}
         @keyframes land-pulse{0%{transform:scale(1.2);} 100%{transform:scale(1);}}
 
-        /* ===== RESULT / BET ===== */
         .result-msg{
             text-align:center; font-size:12px; color:var(--dim); min-height:18px; margin-bottom:6px; letter-spacing:0.3px;
             flex-shrink:0;
@@ -360,7 +354,6 @@
         #paytableBody{display:flex; flex-direction:column; gap:3px; margin-top:6px;}
         .footnote{text-align:center; font-size:8px; color:var(--dim); margin-top:6px; opacity:0.6; flex-shrink:0;}
 
-        /* ===== OVERLAYS ===== */
         .overlay{position:absolute; inset:0; background:rgba(4,2,1,0.86); backdrop-filter:blur(2px); display:flex; align-items:flex-end; z-index:40;}
         .overlay .shop-panel, .overlay .menu-panel{
             width:100%; background:linear-gradient(180deg, var(--panel), var(--panel2)); border-top:1px solid var(--line);
@@ -395,7 +388,6 @@
         .buy-btn span{display:block; font-size:10px; margin-top:1px;}
         .buy-btn:disabled{background:var(--line); color:var(--dim); cursor:not-allowed;}
 
-        /* ===== CHALLENGE ===== */
         #challengeOverlay {
             position:absolute; inset:0; z-index:100; background:rgba(0,0,0,0.92);
             display:flex; flex-direction:column; align-items:center; justify-content:center;
@@ -460,7 +452,6 @@
         .challenge-options button.wrong { border-color:var(--flame1); background:rgba(255,46,46,0.2); }
         #challengeResult { margin-top:8px; font-size:13px; min-height:20px; }
 
-        /* ===== CARD CHOICE ===== */
         #cardChoiceOverlay{
             position:absolute; inset:0; z-index:160; background:rgba(0,0,0,0.88);
             display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px;
@@ -495,7 +486,6 @@
         @media (max-width:480px){ .card{ width:80px; height:110px; font-size:36px; } .card.revealed .card-icon{ font-size:28px; } .card.revealed .card-label{ font-size:9px; } }
         @media (max-width:360px){ .card{ width:70px; height:96px; font-size:30px; } }
 
-        /* ===== GAME OVER / VICTORY ===== */
         .end-card{text-align:center; padding:20px 10px; flex:1; display:flex; flex-direction:column; justify-content:center;}
         .end-emoji{font-size:40px; margin-bottom:10px;}
         .end-card h2{font-family:var(--font-display); font-size:18px; margin-bottom:6px; color:var(--flame1);}
@@ -510,7 +500,6 @@
             display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:12px;
         }
 
-        /* ===== SCARE ===== */
         #scareOverlay{
             position:absolute; inset:0; z-index:200; background:#000; display:flex; flex-direction:column;
             align-items:center; justify-content:center; overflow:hidden;
@@ -532,7 +521,6 @@
         }
         .scare-text{font-family:var(--font-display); color:var(--flame1); font-size:14px; letter-spacing:2px; margin-top:8px; text-align:center; text-shadow:0 0 10px var(--flame1); padding:0 16px;}
 
-        /* ===== FIRE ===== */
         #fireOverlay {
             position:absolute; inset:0; z-index:150;
             background:radial-gradient(ellipse at center, #8b0000 0%, #2a0000 60%, #000 100%);
@@ -639,7 +627,6 @@
             text-shadow:0 0 10px rgba(0,0,0,0.8);
         }
 
-        /* ===== FORCED BET ===== */
         #forcedBetOverlay {
             position:absolute; inset:0; z-index:180; background:rgba(0,0,0,0.88);
             display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px;
@@ -664,7 +651,6 @@
         .forced-bet-actions .primary-btn { min-width:100px; }
         .forced-bet-actions .primary-btn.danger { background:linear-gradient(90deg, var(--flame1), #aa0000); color:#fff; }
 
-        /* ===== PHOENIX AUTO OVERLAY ===== */
         #phoenixAutoOverlay{
             position:absolute; inset:0; z-index:170; background:rgba(0,0,0,0.85);
             display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px;
@@ -690,7 +676,6 @@
             100%{ transform:translateY(-120px) scale(1.5); opacity:0; }
         }
 
-        /* ===== PISCAR ===== */
         .screen-flash {
             animation:screen-flash-anim 0.2s steps(2) 8;
         }
@@ -768,7 +753,6 @@
 
 <div class="app pixel-on" id="app">
 
-    <!-- TELA DE AVISO -->
     <section class="screen" id="screen-warning">
         <div class="warning-wrap">
             <div class="warning-title">⚠️ ATENÇÃO!</div>
@@ -794,7 +778,6 @@
         </div>
     </section>
 
-    <!-- OPENING -->
     <section class="screen hidden" id="screen-opening">
         <div class="menu-wrap">
             <div class="boot-lines" id="bootLines"></div>
@@ -807,7 +790,6 @@
         </div>
     </section>
 
-    <!-- MENU -->
     <section class="screen hidden" id="screen-menu">
         <div class="menu-wrap">
             <div class="opening-icon small">🐦‍🔥</div>
@@ -821,7 +803,6 @@
         </div>
     </section>
 
-    <!-- OPTIONS -->
     <section class="screen hidden" id="screen-options">
         <div class="menu-wrap">
             <h2>⚙️ Opções</h2>
@@ -846,7 +827,6 @@
         </div>
     </section>
 
-    <!-- CREDITS -->
     <section class="screen hidden" id="screen-credits">
         <div class="menu-wrap">
             <div class="opening-icon small hidden" id="creditsWinIcon">🐦‍🔥</div>
@@ -857,7 +837,6 @@
         </div>
     </section>
 
-    <!-- EXIT -->
     <section class="screen hidden" id="screen-exit">
         <div class="menu-wrap">
             <div class="opening-icon">🕯️</div>
@@ -867,7 +846,6 @@
         </div>
     </section>
 
-    <!-- TUTORIAL -->
     <section class="screen hidden" id="screen-tutorial">
         <div class="tutorial-wrap">
             <button class="tutorial-skip" id="tutSkip">⏭ Pular tutorial</button>
@@ -882,7 +860,6 @@
         </div>
     </section>
 
-    <!-- INTRO DA FÊNIX -->
     <section class="screen hidden" id="screen-fenix-intro">
         <div class="menu-wrap" style="justify-content:center;">
             <div class="fenix-big">🐦‍🔥</div>
@@ -891,7 +868,6 @@
         </div>
     </section>
 
-    <!-- DIFFICULTY -->
     <section class="screen hidden" id="screen-difficulty">
         <div class="intro">
             <h2>🔥 Escolha sua chama</h2>
@@ -900,7 +876,6 @@
         <div class="diff-grid" id="diffGrid"></div>
     </section>
 
-    <!-- GAME SCREEN -->
     <section class="screen hidden" id="screen-game">
         <div class="game-top">
             <span class="badge" id="diffBadge">—</span>
@@ -914,7 +889,6 @@
             <div class="floaters" id="floaters"></div>
         </div>
 
-        <!-- HISTÓRICO -->
         <div class="history-panel" id="historyPanel">
             <div class="history-dot" id="h0"></div>
             <div class="history-dot" id="h1"></div>
@@ -959,7 +933,6 @@
         <div class="footnote">🎮 Jogo fictício com dinheiro virtual — apenas para diversão.</div>
     </section>
 
-    <!-- SHOP OVERLAY -->
     <div class="overlay hidden" id="shopOverlay">
         <div class="shop-panel">
             <div class="shop-head">
@@ -971,7 +944,6 @@
         </div>
     </div>
 
-    <!-- MENU IN-GAME -->
     <div class="overlay hidden" id="gameMenuOverlay">
         <div class="menu-panel">
             <div class="menu-head">
@@ -986,7 +958,6 @@
         </div>
     </div>
 
-    <!-- CHALLENGE OVERLAY -->
     <div id="challengeOverlay" class="hidden">
         <div class="challenge-panel">
             <div class="challenge-phoenix-icon">🐦‍🔥</div>
@@ -999,7 +970,6 @@
         </div>
     </div>
 
-    <!-- FIRE OVERLAY -->
     <div id="fireOverlay" class="hidden">
         <div class="fire-bg-particles"></div>
         <div class="fire-emoji-large">🔥</div>
@@ -1016,7 +986,6 @@
         </div>
     </div>
 
-    <!-- SORTE OU AZAR (CARTAS) -->
     <div id="cardChoiceOverlay" class="hidden">
         <div class="card-panel">
             <h2>🃏 Sorte ou Azar</h2>
@@ -1039,7 +1008,6 @@
         </div>
     </div>
 
-    <!-- PHOENIX AUTO SPIN (EVENTO) -->
     <div id="phoenixAutoOverlay" class="hidden">
         <div class="phoenix-auto-panel">
             <div class="phoenix-icon">🐦‍🔥</div>
@@ -1050,7 +1018,6 @@
         </div>
     </div>
 
-    <!-- APOSTA FORÇADA -->
     <div id="forcedBetOverlay" class="hidden">
         <div class="forced-bet-panel">
             <div class="phoenix-icon">🐦‍🔥</div>
@@ -1065,7 +1032,6 @@
         </div>
     </div>
 
-    <!-- GAME OVER -->
     <section class="screen hidden" id="screen-gameover">
         <div class="end-card">
             <div class="end-emoji">💀</div>
@@ -1080,7 +1046,6 @@
         </div>
     </section>
 
-    <!-- VICTORY -->
     <section class="screen hidden" id="screen-victory">
         <div class="end-card">
             <div class="phoenix-big">🐦‍🔥</div>
@@ -1099,10 +1064,6 @@
 </div>
 
 <script>
-// ============================================================
-// CÓDIGO COMPLETO OTIMIZADO - EMBER SPIN (SEM AUTO-SPIN)
-// ============================================================
-
 const LEVELS_ORDER = ['nivel1','nivel2','nivel3','nivelfenix'];
 const DIFFS = {
     nivel1: {
@@ -1188,7 +1149,6 @@ const DEBOCHING_PHRASES = [
 const BOOT_LINES = ['CARREGANDO...', 'INICIALIZANDO SISTEMA...', 'PREPARANDO JOGO...', 'PRONTO.'];
 const GAMEOVER_FLAVORS = ['Que pena!', 'Tente novamente!', 'Não foi dessa vez!', 'Continue tentando!'];
 
-// Frases da Fênix quando o jogador perde
 const PHOENIX_LOSE_PHRASES = [
     "🐦‍🔥 A Fênix riu da sua aposta! Perdeu 💰 ",
     "🐦‍🔥 A Fênix queimou seu dinheiro! Perdeu 💰 ",
@@ -1200,7 +1160,6 @@ const PHOENIX_LOSE_PHRASES = [
     "🐦‍🔥 A Fênix se divertiu com sua derrota! Perdeu 💰 "
 ];
 
-// ===== ESTADO GLOBAL =====
 let state = {
     difficulty:null, saldo:0, displayedSaldo:0, betValue:2, score:0, levelGoalReached:false,
     upgrades:{pena:0, diamante:0, fenix:0, limite:0},
@@ -1214,9 +1173,7 @@ let state = {
     phoenixAutoActive:false,
     forcedBetPending:false, forcedBetAmount:0,
     shopPending:false,
-    // Histórico
-    history:[], // array de { symbol, win }
-    // Modo invertido
+    history:[],
     invertedMode:false,
     invertedTimer:null,
     invertedTimeout:null,
@@ -1228,7 +1185,6 @@ let challengeActive = false;
 let spinsSinceLastHaunt = 0, spinsUntilHaunt = 0;
 let fireInterval = null, fireButtonsRemaining = 0, fireTimerSeconds = 0;
 
-// ===== REFERÊNCIAS DOM =====
 const $ = id => document.getElementById(id);
 const appEl=$('app'), diffGrid=$('diffGrid'), diffBadge=$('diffBadge'), scoreBadge=$('scoreBadge'),
     upgradeChips=$('upgradeChips'), gameMenuBtn=$('gameMenuBtn'),
@@ -1265,9 +1221,6 @@ const appEl=$('app'), diffGrid=$('diffGrid'), diffBadge=$('diffBadge'), scoreBad
     forcedBetOverlay=$('forcedBetOverlay'), forcedBetAmount=$('forcedBetAmount'),
     forcedBetAccept=$('forcedBetAccept'), forcedBetDecline=$('forcedBetDecline');
 
-// ============================================================
-// ÁUDIO (simplificado e otimizado)
-// ============================================================
 let audioCtx=null, musicFilter=null, musicMasterGain=null, musicTimer=null, nextNoteTime=0, current16th=0;
 const BPM=92, CHORDS=[
     {bass:110, tones:[220,261.63,329.63]},
@@ -1322,7 +1275,6 @@ function playFinalScareSound(done){ if(state.musicVolume<=0){ setTimeout(done,40
 function playCountdownBeep(sec){ if(state.musicVolume<=0||!audioCtx) return; const freq=sec<=3?880:440; const dur=sec<=3?0.15:0.08; playBeep(freq,0,dur,'square',0.15); }
 function playSpinSound(){ if(state.musicVolume<=0) return; ensureAudioCtx(); const ctx=audioCtx,t=ctx.currentTime; const o=ctx.createOscillator(); o.type='sawtooth'; const g=ctx.createGain(); o.connect(g); g.connect(ctx.destination); o.frequency.setValueAtTime(200,t); o.frequency.exponentialRampToValueAtTime(800,t+0.3); g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(0.18*(state.musicVolume/100),t+0.05); g.gain.exponentialRampToValueAtTime(0.0001,t+0.35); o.start(t); o.stop(t+0.4); }
 
-// HAPPY CREDITS
 let happyTimer=null, happyNextNote=0, happy16th=0, happyGain=null, happyFilter=null;
 const HAPPY_CHORDS=[{bass:130.81,tones:[261.63,329.63,392]},{bass:196,tones:[392,493.88,587.33]},{bass:220,tones:[440,523.25,659.25]},{bass:174.61,tones:[349.23,440,523.25]}];
 function scheduleHappyNote(freq,time,dur,type,vol){
@@ -1349,9 +1301,6 @@ function happyMusicScheduler(){
 function startHappyMusic(){ if(state.musicVolume<=0) return; ensureAudioCtx(); if(happyTimer) return; happyFilter=audioCtx.createBiquadFilter(); happyFilter.type='lowpass'; happyFilter.frequency.value=2400; happyFilter.connect(audioCtx.destination); happyGain=audioCtx.createGain(); happyGain.gain.value=getMusicGain(); happyGain.connect(happyFilter); happyNextNote=audioCtx.currentTime+0.05; happy16th=0; happyTimer=setInterval(happyMusicScheduler,25); }
 function stopHappyMusic(){ if(happyTimer){ clearInterval(happyTimer); happyTimer=null; } if(happyGain){ const g=happyGain; g.gain.setTargetAtTime(0,audioCtx.currentTime,0.25); setTimeout(()=>{ try{ g.disconnect(); }catch(e){} },500); happyGain=null; happyFilter=null; } }
 
-// ============================================================
-// FUNÇÕES DE TELA E INICIALIZAÇÃO
-// ============================================================
 function startWarningSequence(){
     let sec=10, total=10;
     warningTimerEl.textContent=sec;
@@ -1511,7 +1460,6 @@ function startGame(key, restoreData){
     paytableBody.innerHTML=buildPaytableHTML(state.difficulty,true);
     renderUpgradeChips(); resetReelsVisual(); syncBetLimits();
     scheduleHauntAfterSpins();
-    // Agenda o primeiro modo invertido
     scheduleInvertedMode();
 }
 function updateScoreUI(){ scoreBadge.textContent='🏆 '+state.score; }
@@ -1597,7 +1545,6 @@ function spinReels(outcomeKey, done){
     setTimeout(done, stopTimes[2]+300);
 }
 
-// ===== DESAFIOS =====
 function getChallengeTime(){
     const map={nivel1:10,nivel2:5,nivel3:5,nivelfenix:3+Math.floor(Math.random()*3)};
     return map[state.difficulty]||10;
@@ -1626,7 +1573,7 @@ function startRandomChallenge(){
             clearInterval(countInterval);
             document.querySelectorAll('#challengeOptions button').forEach(b=>b.disabled=true);
             challengeResult.textContent='⏰ Tempo esgotado!'; challengeResult.style.color='var(--flame1)';
-            applyPenalty(0.2); // 20% do saldo
+            applyPenalty(0.2);
             setTimeout(()=>{ challengeOverlay.classList.add('hidden'); challengeActive=false; if(state.shopPending){ state.shopPending=false; openShopAutomatically(); } if(state.phoenixAutoActive) return; },1500);
         }
     },1000);
@@ -1635,12 +1582,11 @@ function startRandomChallenge(){
         clearInterval(countInterval);
         document.querySelectorAll('#challengeOptions button').forEach(b=>b.disabled=true);
         if(selected===correct){ btn.classList.add('correct'); challengeResult.textContent='✅ Correto!'; challengeResult.style.color='var(--clover)'; }
-        else { btn.classList.add('wrong'); document.querySelectorAll('#challengeOptions button').forEach((b,i)=>{ if(i===correct) b.classList.add('correct'); }); challengeResult.textContent='❌ Incorreto!'; challengeResult.style.color='var(--flame1)'; applyPenalty(0.2); /* 20% */ }
+        else { btn.classList.add('wrong'); document.querySelectorAll('#challengeOptions button').forEach((b,i)=>{ if(i===correct) b.classList.add('correct'); }); challengeResult.textContent='❌ Incorreto!'; challengeResult.style.color='var(--flame1)'; applyPenalty(0.2); }
         setTimeout(()=>{ challengeOverlay.classList.add('hidden'); challengeActive=false; if(state.shopPending){ state.shopPending=false; openShopAutomatically(); } if(state.phoenixAutoActive) return; },1500);
     }
 }
 
-// ===== APOSTA FORÇADA =====
 function triggerForcedBet(){
     if(state.forcedBetPending||state.spinning||state.phoenixAutoActive||challengeActive) return;
     if(state.saldo<2) return;
@@ -1677,12 +1623,10 @@ function declineForcedBet(){
 forcedBetAccept.addEventListener('click', acceptForcedBet);
 forcedBetDecline.addEventListener('click', declineForcedBet);
 
-// ===== MODO INVERTIDO =====
 function scheduleInvertedMode(){
     if(state.invertedActive) return;
     const minSpins=5, maxSpins=15;
     state.invertedSpinsUntil=Math.floor(Math.random()*(maxSpins-minSpins+1))+minSpins;
-    // Será verificado no checkHauntAfterSpin
 }
 function activateInvertedMode(){
     if(state.invertedActive) return;
@@ -1693,7 +1637,6 @@ function activateInvertedMode(){
     resultMsg.textContent='🌀 MODO INVERTIDO ATIVO! Três iguais = PERDE, diferentes = RECUPERA!';
     resultMsg.className='result-msg jackpot';
     playPhoenixSound();
-    // Desativa após alguns segundos (8-14s)
     const duration=8000+Math.random()*6000;
     state.invertedTimeout=setTimeout(()=>{
         deactivateInvertedMode();
@@ -1709,7 +1652,6 @@ function deactivateInvertedMode(){
     scheduleInvertedMode();
 }
 
-// ===== EXECUÇÃO DO GIRO (CORRIGIDA) =====
 function executeSpin(bet, isAuto, ignoreMaxBet=false){
     const diff=DIFFS[state.difficulty];
     if(!bet||bet<=0) return;
@@ -1722,7 +1664,6 @@ function executeSpin(bet, isAuto, ignoreMaxBet=false){
         if(bet>maxAllowed) bet=maxAllowed;
     }
 
-    // Subtrai a aposta
     state.saldo = Math.max(0, Math.round((state.saldo - bet)*100)/100);
     updateBalanceUI();
     setSpinning(true);
@@ -1734,56 +1675,50 @@ function executeSpin(bet, isAuto, ignoreMaxBet=false){
         let mult = effectiveMult(outcomeKey) * state.nextSpinMultiplier;
         state.nextSpinMultiplier = 1;
 
-        let totalChange = 0;       // Variação real no saldo (a partir do saldo já descontado)
-        let displayProfit = 0;     // Valor a ser mostrado na mensagem e no floater
+        let totalChange = 0;
+        let displayProfit = 0;
 
         if(state.invertedMode){
             if(outcomeKey !== 'vazio') {
-                // Três iguais → perde bet * mult (total)
                 displayProfit = -bet * mult;
-                totalChange = -bet * (mult - 1);  // perda adicional (pois a aposta já foi descontada)
+                totalChange = -bet * (mult - 1);
             } else {
-                // Diferentes → recupera a aposta
-                displayProfit = 0;   // ou bet? Vamos mostrar que recuperou
-                totalChange = bet;    // devolve a aposta
+                displayProfit = 0;
+                totalChange = bet;
             }
         } else {
-            // Modo normal
             if(outcomeKey !== 'vazio') {
-                displayProfit = bet * mult - bet;  // lucro líquido
-                totalChange = bet * mult;          // ganha o total (inclui devolução da aposta)
+                displayProfit = bet * mult - bet;
+                totalChange = bet * mult;
             } else {
                 displayProfit = -bet;
-                totalChange = 0;  // não adiciona nada (a aposta já foi descontada)
+                totalChange = 0;
             }
         }
 
-        // Aplica a variação ao saldo
         state.saldo = Math.round((state.saldo + totalChange)*100)/100;
         if(state.saldo < 0) state.saldo = 0;
         updateBalanceUI();
 
-        // Exibe o resultado e atualiza o histórico
         let win = false;
         if(state.invertedMode){
             if(outcomeKey !== 'vazio') {
                 resultMsg.textContent = '🌀 INVERTIDO: Três '+SYMBOLS[outcomeKey].label+'! PERDEU '+fmt(bet*mult)+' (x'+fmtMultNum(mult)+')';
                 resultMsg.className = 'result-msg lose';
                 playLoseSound();
-                showFloater(displayProfit); // mostra o total perdido
+                showFloater(displayProfit);
                 state.consecutiveWins = Math.max(-2, state.consecutiveWins - 1);
                 win = false;
             } else {
                 resultMsg.textContent = '🌀 INVERTIDO: Diferentes! RECUPEROU '+fmt(bet);
                 resultMsg.className = 'result-msg win';
                 playWinSound(false);
-                showFloater(0); // não houve lucro
+                showFloater(0);
                 state.consecutiveWins++;
                 if(state.consecutiveWins>=3) phoenixBg.classList.add('active');
                 win = true;
             }
         } else {
-            // Modo normal
             if(outcomeKey === 'vazio') {
                 const loseMsg = PHOENIX_LOSE_PHRASES[Math.floor(Math.random() * PHOENIX_LOSE_PHRASES.length)] + fmt(bet);
                 resultMsg.textContent = loseMsg;
@@ -1825,10 +1760,8 @@ function executeSpin(bet, isAuto, ignoreMaxBet=false){
             }
         }
 
-        // Adiciona ao histórico
         addHistory(outcomeKey, win);
 
-        // Finaliza o giro
         if(!isAuto){
             setSpinning(false);
             if(!state.forcedBetPending && Math.random()<0.05 && state.saldo>5 && !state.shopPending) triggerForcedBet();
@@ -1903,7 +1836,6 @@ function handleLevelComplete(){
     setSpinning(false);
 }
 
-// ===== HISTÓRICO =====
 function addHistory(symbolKey, win){
     const symbol = SYMBOLS[symbolKey] ? SYMBOLS[symbolKey].emoji : '❔';
     state.history.push({ symbol, win });
@@ -1925,9 +1857,6 @@ function updateHistoryUI(){
     }
 }
 
-// ============================================================
-// EVENTOS ALEATÓRIOS
-// ============================================================
 function getHauntSpinRange(){
     const ranges={nivel1:{min:5,max:15}, nivel2:{min:4,max:12}, nivel3:{min:3,max:10}, nivelfenix:{min:2,max:8}};
     return ranges[state.difficulty]||{min:5,max:15};
@@ -1941,7 +1870,6 @@ function checkHauntAfterSpin(){
     if(challengeActive||state.phoenixAutoActive||state.forcedBetPending||state.shopPending||state.spinning) return;
     if(document.getElementById('screen-game').classList.contains('hidden')) return;
 
-    // Verifica se deve ativar modo invertido
     if(!state.invertedActive && state.invertedSpinsUntil !== undefined){
         state.invertedSpinsUntil--;
         if(state.invertedSpinsUntil <= 0 && !state.invertedActive && !state.spinning && !state.phoenixAutoActive && !challengeActive && !state.forcedBetPending && !state.shopPending){
@@ -1981,7 +1909,6 @@ function showChallengeWithScare(){
     setTimeout(()=>{ overlay.remove(); startRandomChallenge(); },1400);
 }
 
-// ===== EVENTO AUTO-SPIN DA FÊNIX =====
 function startPhoenixAutoSpinEvent(){
     if(challengeActive||state.phoenixAutoActive||state.shopPending||state.forcedBetPending) return;
     if(state.saldo<2) return;
@@ -2021,7 +1948,6 @@ function startPhoenixAutoSpinEvent(){
     setTimeout(nextAutoSpin,800);
 }
 
-// ===== FOGO =====
 function applyPenalty(pct){
     const loss=Math.round(state.saldo*pct*100)/100;
     state.saldo=Math.max(0,state.saldo-loss);
@@ -2093,7 +2019,6 @@ function startFireEvent(){
     },1000);
 }
 
-// ===== CARTAS =====
 const cardEffects=[
     {type:'bonus',desc:'+10% do saldo',icon:'💰',weight:6,apply:s=>{s.saldo=Math.round(s.saldo*1.1*100)/100;}},
     {type:'bonus',desc:'+25% do saldo',icon:'💎',weight:4,apply:s=>{s.saldo=Math.round(s.saldo*1.25*100)/100;}},
@@ -2149,9 +2074,6 @@ function startCardChoiceEvent(){
     });
 }
 
-// ============================================================
-// LOJA
-// ============================================================
 function checkShopUnlock(){
     const milestone=Math.floor(state.saldo/100)*100;
     if(milestone>state.lastShopMilestone && milestone>=100){
@@ -2252,17 +2174,11 @@ retryBtn.addEventListener('click', ()=>{
     showFenixIntro();
 });
 
-// ============================================================
-// UTILITY
-// ============================================================
 function fmtNum(v){ return v.toLocaleString('pt-BR',{minimumFractionDigits:2, maximumFractionDigits:2}); }
 function fmt(v){ return '💰 '+fmtNum(v); }
 function fmtMultNum(m){ return (m%1===0)?String(m):m.toFixed(1); }
 function pct(w){ return (Math.round(w*10)/10)+'%'; }
 
-// ============================================================
-// INICIALIZAÇÃO
-// ============================================================
 document.querySelectorAll('.screen').forEach(el=>el.classList.add('hidden'));
 document.getElementById('screen-warning').classList.remove('hidden');
 startWarningSequence();
@@ -2270,3 +2186,4 @@ startWarningSequence();
 <script src="ember-patch.js"></script>
 </body>
 </html>
+```
